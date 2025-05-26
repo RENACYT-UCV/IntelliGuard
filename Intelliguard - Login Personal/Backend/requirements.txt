@@ -1,0 +1,10 @@
+flask
+flask-cors
+opencv-python
+matplotlib
+imutils
+opencv-contrib-python
+bcrypt
+flask-jwt-extended
+ultralytics
+openpyxl
