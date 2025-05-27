@@ -28,6 +28,20 @@ def login():
     
     return jsonify({'error': 'Credenciales inválidas'}), 401
 
+@auth_bp.route('/login/personal', methods=['POST'])
+def loginPersonal():
+    data = request.get_json()
+    usuario = data.get('usuario')
+    contraseña = data.get('contraseña')
+    
+    usuario_db = base_datos_usuarios.consultar_usuario_personal(usuario)
+    if usuario_db and bcrypt.checkpw(contraseña.encode('utf-8'), usuario_db.hash_contraseña):
+        additional_claims = {"rol": usuario_db.rol}
+        access_token = create_access_token(identity=usuario, additional_claims=additional_claims)
+        return jsonify({'access_token': access_token}), 200
+    else:
+        return jsonify({'mensaje': 'Credenciales incorrectas'}), 401
+
 @auth_bp.route('/registro', methods=['POST'])
 # @jwt_required() #Se desactivada el jwt_required, debido a que se quito el login y por ello no se puede generar un token de sesion
 # @role_required('Administrador') #Se desactivada el role_required, debido a que no existe un token de sesion y por ello no se puede obtener el rol
@@ -44,7 +58,7 @@ def registro():
     base_datos_usuarios.agregar_usuario(usuario, hash_contraseña, idRol)
     return jsonify({'mensaje': 'Usuario registrado exitosamente'}), 200
 
-@auth_bp.route('/usuarios', methods=['POST'])
+@auth_bp.route('/usuarios', methods=['GET', 'POST'])
 # @jwt_required()
 # @role_required('Administrador')
 def listar_usuarios():

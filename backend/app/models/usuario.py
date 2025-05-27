@@ -12,11 +12,23 @@ class BaseDatosUsuarios:
     def __init__(self):
         self.db = Database()
         self.conexion = self.db.get_connection()
-        self.cursor = self.conexion.cursor()
+        self.crear_tabla_roles()
         self.crear_tabla_usuarios()
 
+    def crear_tabla_roles(self):
+        cursor = self.conexion.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS rol_usuario (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            rol TEXT NOT NULL
+                        )''')
+        # Insertar roles básicos si no existen
+        cursor.execute("INSERT OR IGNORE INTO rol_usuario (id, rol) VALUES (1, 'Personal')")
+        cursor.execute("INSERT OR IGNORE INTO rol_usuario (id, rol) VALUES (2, 'Administrador')")
+        self.conexion.commit()
+
     def crear_tabla_usuarios(self):
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (
+        cursor = self.conexion.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (
                                 id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
                                 usuario TEXT NOT NULL,
                                 hash_contraseña TEXT NOT NULL,
@@ -26,18 +38,36 @@ class BaseDatosUsuarios:
         self.conexion.commit()
 
     def agregar_usuario(self, usuario, contraseña, idRol):
-        self.cursor.execute("INSERT INTO usuarios (usuario, hash_contraseña, id_rol) VALUES (?, ?, ?)", 
+        cursor = self.conexion.cursor()
+        cursor.execute("INSERT INTO usuarios (usuario, hash_contraseña, id_rol) VALUES (?, ?, ?)", 
                           (usuario, contraseña, idRol))
         self.conexion.commit()
 
     def consultar_usuario_por_usuario(self, usuario):
-        self.cursor.execute("""
+        cursor = self.conexion.cursor()
+        cursor.execute("""
             SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
             FROM usuarios u
             LEFT JOIN rol_usuario r ON u.id_rol = r.id
             WHERE u.usuario = ?
         """, (usuario,))
-        resultado = self.cursor.fetchone()
+        resultado = cursor.fetchone()
+        if resultado:
+            id_usuario, usuario, hash_contraseña, id_rol, rol = resultado
+            return Usuario(id_usuario, usuario, hash_contraseña, id_rol, rol)
+        else:
+            return None
+
+    def consultar_usuario_personal(self, usuario):
+        cursor = self.conexion.cursor()
+        rol_id = 1  # ID del rol de personal
+        cursor.execute("""
+            SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
+            FROM usuarios u
+            LEFT JOIN rol_usuario r ON u.id_rol = r.id
+            WHERE u.usuario = ? AND u.id_rol = ?
+        """, (usuario, rol_id))
+        resultado = cursor.fetchone()
         if resultado:
             id_usuario, usuario, hash_contraseña, id_rol, rol = resultado
             return Usuario(id_usuario, usuario, hash_contraseña, id_rol, rol)
@@ -45,13 +75,14 @@ class BaseDatosUsuarios:
             return None
 
     def consultar_usuario_por_id(self, id_usuario):
-        self.cursor.execute("""
+        cursor = self.conexion.cursor()
+        cursor.execute("""
             SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
             FROM usuarios u
             LEFT JOIN rol_usuario r ON u.id_rol = r.id
             WHERE u.id_usuario = ?
         """, (id_usuario,))
-        resultado = self.cursor.fetchone()
+        resultado = cursor.fetchone()
         if resultado:
             id_usuario, usuario, hash_contraseña, id_rol, rol = resultado
             return Usuario(id_usuario, usuario, hash_contraseña, id_rol, rol)
@@ -60,12 +91,13 @@ class BaseDatosUsuarios:
 
     def listar_usuarios(self):
         try:
-            self.cursor.execute("""
+            cursor = self.conexion.cursor()
+            cursor.execute("""
                 SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
                 FROM usuarios u
                 LEFT JOIN rol_usuario r ON u.id_rol = r.id
             """)
-            resultados = self.cursor.fetchall()
+            resultados = cursor.fetchall()
             usuarios = []
             for resultado in resultados:
                 id_usuario, usuario, hash_contraseña, id_rol, rol = resultado
@@ -76,16 +108,15 @@ class BaseDatosUsuarios:
             return []
     
     def editar_usuario(self, id_usuario, nuevo_usuario, nueva_contraseña, nuevo_id_rol):
+        cursor = self.conexion.cursor()
         if nueva_contraseña:  # Si la nueva contraseña no está vacía
-            # Actualizar tanto el nombre de usuario como la contraseña y el rol
-            self.cursor.execute("""
+            cursor.execute("""
                 UPDATE usuarios 
                 SET usuario = ?, hash_contraseña = ?, id_rol = ? 
                 WHERE id_usuario = ?
             """, (nuevo_usuario, nueva_contraseña, nuevo_id_rol, id_usuario))
         else:
-            # Solo actualizar el nombre de usuario y el rol
-            self.cursor.execute("""
+            cursor.execute("""
                 UPDATE usuarios 
                 SET usuario = ?, id_rol = ? 
                 WHERE id_usuario = ?
@@ -94,6 +125,7 @@ class BaseDatosUsuarios:
         self.conexion.commit()
 
     def eliminar_usuario(self, id_usuario):
-        self.cursor.execute("DELETE FROM usuarios WHERE id_usuario = ?", (id_usuario,))
+        cursor = self.conexion.cursor()
+        cursor.execute("DELETE FROM usuarios WHERE id_usuario = ?", (id_usuario,))
         self.conexion.commit()
 
