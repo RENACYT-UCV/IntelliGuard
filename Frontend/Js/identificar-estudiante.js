@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   let datosEstudiante = null;
   let isFrontCamera = true;
-  let coincidenciaExistente = null;
+  let coincidenciaExistente = null; 
   const umbralSimilitud = 20;
   const minCoincidencias = 4;
   let stream;
