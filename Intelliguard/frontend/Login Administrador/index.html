@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/login.css">
+    <title>Login Administrador</title>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>Login Administrador</h1>
+            <label for="username">Ingrese su Usuario</label>
+            <input type="text" id="username">
+            <label for="password">Clave Virtual</label>
+            <input type="password" id="password" readonly>
+            <button class="btn" onclick="login()">Ingresar</button>
+            <div class="error-message" id="error-message">
+                Usuario o contraseña incorrectos
+            </div>
+        </div>
+        <div class="keyboard-box">
+            <h2>Teclado Virtual</h2>
+            <p>Clave de 6 dígitos</p>
+            <div class="keyboard" id="keyboard">
+                <button onclick="agregarDigito(9)">9</button>
+                <button onclick="agregarDigito(4)">4</button>
+                <button onclick="agregarDigito(1)">1</button>
+                <button onclick="agregarDigito(2)">2</button>
+                <button onclick="agregarDigito(6)">6</button>
+                <button onclick="eliminarDigito()">Borrar</button>
+                <button onclick="agregarDigito(7)">7</button>
+                <button onclick="agregarDigito(8)">8</button>
+                <button onclick="agregarDigito(5)">5</button>
+                <button onclick="agregarDigito(3)">3</button>
+                <button onclick="agregarDigito(0)">0</button>
+                <button onclick="limpiarDigitos()">Limpiar</button>
+            </div>
+        </div>
+    </div>
+<script src="js/login.js"></script>
+<script src="utils/config.js"></script>
+<script src="utils/sessionManager.js"></script>
+</body>
+</html>
