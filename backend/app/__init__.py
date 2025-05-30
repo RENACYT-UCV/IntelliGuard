@@ -16,7 +16,10 @@ def create_app():
     
     # Registrar blueprints
     from .routes.auth_routes import auth_bp
+    from .routes.pertenencias_route import pertenencias_bp
+    
     app.register_blueprint(auth_bp)
+    app.register_blueprint(pertenencias_bp)
     
     @app.route('/')
     def index():

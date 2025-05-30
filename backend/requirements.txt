@@ -1,10 +1,13 @@
-flask==2.0.1
-flask-cors==3.0.10
-flask-jwt-extended==4.3.1
-bcrypt==4.0.1
-opencv-python==4.8.0
-matplotlib==3.7.1
-imutils==0.5.4
-opencv-contrib-python==4.8.0
-ultralytics==8.0.0
-openpyxl==3.1.2
+flask
+flask-cors
+flask-jwt-extended
+bcrypt
+numpy
+opencv-python
+matplotlib
+imutils
+opencv-contrib-python
+ultralytics
+openpyxl
+# instalar todo , si da error culpa de Gamarra
+pip install flask flask-cors flask-jwt-extended bcrypt opencv-python matplotlib imutils opencv-contrib-python ultralytics openpyxl Numpy

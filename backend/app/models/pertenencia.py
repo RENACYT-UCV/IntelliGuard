@@ -1,7 +1,8 @@
 import sqlite3
 from datetime import datetime
+
 class Pertenencia:
-    def __init__(self, codigo_pertenencia, tipo_objeto, imagen_pertenencia, id_estudiante,id_ultimo_estado,fecha_ultima_actividad,estado_text,objeto_text):
+    def __init__(self, codigo_pertenencia, tipo_objeto, imagen_pertenencia, id_estudiante, id_ultimo_estado, fecha_ultima_actividad, estado_text, objeto_text):
         self.codigo_pertenencia = codigo_pertenencia
         self.tipo_objeto = tipo_objeto
         self.imagen_pertenencia = imagen_pertenencia
@@ -9,10 +10,10 @@ class Pertenencia:
         self.id_ultimo_estado = id_ultimo_estado
         self.fecha_ultima_actividad = fecha_ultima_actividad
         self.estado_text = estado_text
-        self.objeto_text=objeto_text
+        self.objeto_text = objeto_text
 
 class PertenenciaEstudiante:
-    def __init__(self, codigo_pertenencia, tipo_objeto, imagen_pertenencia, id_estudiante,id_ultimo_estado,fecha_ultima_actividad,estado_text,objeto_text,codigo_estudiante,nombres_estudiante,carrera_estudiante,plan_estudiante):
+    def __init__(self, codigo_pertenencia, tipo_objeto, imagen_pertenencia, id_estudiante, id_ultimo_estado, fecha_ultima_actividad, estado_text, objeto_text, codigo_estudiante, nombres_estudiante, carrera_estudiante, plan_estudiante):
         self.codigo_pertenencia = codigo_pertenencia
         self.tipo_objeto = tipo_objeto
         self.imagen_pertenencia = imagen_pertenencia
@@ -20,12 +21,11 @@ class PertenenciaEstudiante:
         self.id_ultimo_estado = id_ultimo_estado
         self.fecha_ultima_actividad = fecha_ultima_actividad
         self.estado_text = estado_text
-        self.objeto_text=objeto_text
-        self.codigo_estudiante=codigo_estudiante
-        self.nombres_estudiante=nombres_estudiante
-        self.carrera_estudiante=carrera_estudiante
-        self.plan_estudiante=plan_estudiante
-
+        self.objeto_text = objeto_text
+        self.codigo_estudiante = codigo_estudiante
+        self.nombres_estudiante = nombres_estudiante
+        self.carrera_estudiante = carrera_estudiante
+        self.plan_estudiante = plan_estudiante
 
 class BaseDatosPertenencia:
     def __init__(self, nombre_archivo):
@@ -45,9 +45,7 @@ class BaseDatosPertenencia:
                                 FOREIGN KEY (idEstudiante) REFERENCES estudiantes(idEstudiante))''')
         self.conexion.commit()
 
-
-
-    def consultar_pertencias_estudiante_busqueda(self, datosEstudiante="", estadoPertenencia="", codigoPertenencia=""):
+    def consultar_pertenencias_estudiante_busqueda(self, datosEstudiante="", estadoPertenencia="", codigoPertenencia=""):
         query = """
             SELECT p.codigoPertenencia, p.tipoObjeto, p.imagenPertenencia, p.idEstudiante, p.idUltimoEstado,
                     p.FechaUltimaActividad, ep.estado, o.Nombre, e.codigoEstudiante, e.Nombres, e.Carrera, e.planEstudiante
@@ -87,7 +85,6 @@ class BaseDatosPertenencia:
             )
             pertenencias.append(pertenenciaEstudiante)
         pertenencias_ordenadas = sorted(pertenencias, 
-                                        key=lambda x: datetime.strptime(x.fecha_ultima_actividad, "%Y-%m-%d_%H-%M-%S"),reverse=True)
-        return pertenencias_ordenadas
-
-    
+                                      key=lambda x: datetime.strptime(x.fecha_ultima_actividad, "%Y-%m-%d_%H-%M-%S"),
+                                      reverse=True)
+        return pertenencias_ordenadas 
