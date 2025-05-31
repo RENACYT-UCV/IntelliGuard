@@ -1,107 +1,410 @@
-body {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    font-family: "Montserrat", sans-serif;
-    color: #343a40;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #333;
-    margin-bottom: 20px;
-    color: #fff;
-  }
-  
-  .header .titulo {
-    font-weight: bold;
-  }
-  
-  .container {
-    margin: 20px auto;
-    max-width: 600px;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  #message {
-    margin-top: 20px;
-  }
-  
-  @media (max-width: 768px) {
-    .header .titulo {
-      margin-bottom: 10px;
-    }
-  }
-  
-  .login-box, .keyboard-box {
-    padding: 20px;
-    width: 50%;
-}
-.login-box {
-    background: #f9f9f9;
-}
-.keyboard-box {
-    background: #ffffff;
-    border-left: 1px solid #e0e0e0;
-}
-h1 {
-    margin: 0;
-    padding-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-}
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
-}
-input[type="text"], input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
-.keyboard {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-.keyboard button {
-    padding: 15px;
-    font-size: 18px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    background: #f0f0f0;
-}
-.keyboard button:active {
-    background: #ccc;
-}
-.keyboard-box h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #333;
-}
-.forgot {
-    display: block;
-    margin-top: 10px;
-    text-align: center;
-    color: #003366;
-    text-decoration: none;
-}
-.forgot:hover {
-    text-decoration: underline;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Reset y base */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
+body {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: 'Poppins', sans-serif;
+  color: #343a40;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa;
+
+  /* Flex para manejo layout */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* HEADER fijo arriba */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  background-color: #000000;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.header .titulo {
+  font-weight: 700;
+  font-size: 1.25rem; /* 20px */
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.header #menuBtn {
+  font-size: 0.875rem; /* 14px */
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  background-color: #0d6efd;
+  color: #fff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+}
+
+.header #menuBtn:hover,
+.header #menuBtn:focus {
+  background-color: #0a58ca;
+  box-shadow: 0 4px 12px rgba(10, 88, 202, 0.6);
+  outline: none;
+}
+
+/* CONTENEDOR principal */
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 80px auto 40px; /* deja espacio debajo del header */
+  padding: 0 20px;
+  flex-grow: 1;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem; /* 32px */
+  color: #222;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* Contenedor principal del formulario */
+.form-main {
+  display: flex;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  gap: 12px;
+  max-width: 100%;
+  margin: 0 auto;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-main:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+}
+
+/* Lados del formulario */
+.left-side,
+.right-side {
+  padding: 24px 28px;
+  flex: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Separador vertical */
+.separator {
+  width: 1px;
+  background-color: #ddd;
+  margin: 10px 0;
+  opacity: 0.7;
+}
+
+/* Etiquetas */
+.mb-3 label {
+  display: block;
+  margin-bottom: 8px;
+  color: #444;
+  font-weight: 600;
+  font-size: 0.875rem; /* 14px */
+  user-select: none;
+}
+
+/* Inputs y selects */
+.mb-3 input[type="text"],
+.mb-3 select,
+.mb-3 input[type="password"] {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem; /* 16px */
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  outline-offset: 3px;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  color: #222;
+}
+
+.mb-3 input[type="text"]:focus,
+.mb-3 select:focus,
+.mb-3 input[type="password"]:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 8px #0d6efd66;
+}
+
+/* Teclado virtual */
+.keyboard-box h2 {
+  font-size: 1.25rem; /* 20px */
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 700;
+}
+
+.keyboard-box p {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: #666;
+  font-size: 0.875rem; /* 14px */
+}
+
+/* Centro el teclado en móviles y desktop */
+.keyboard-box {
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* Teclado estilo grid */
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 60px);
+  gap: 14px;
+  max-width: 100%;
+}
+
+.keyboard button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background-color: #fafafa;
+  cursor: pointer;
+  user-select: none;
+  padding: 6px 8px;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  color: #222;
+  font-family: 'Poppins', sans-serif;
+  user-select: none;
+}
+
+.keyboard button:hover,
+.keyboard button:focus {
+  background-color: #e1eaff;
+  border-color: #0d6efd;
+  box-shadow: 0 6px 14px rgba(13, 110, 253, 0.4);
+  outline: none;
+}
+
+.keyboard button:active {
+  background-color: #bed0ff;
+  border-color: #0a58ca;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.keyboard button.btn-icon svg {
+  stroke: #555;
+  width: 22px;
+  height: 22px;
+}
+
+.keyboard button.wide {
+  grid-column: span 2;
+}
+
+/* Botón principal (Registrar/Editar) */
+.left-side button[type="submit"] {
+  padding: 14px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  width: 100%;
+  border: none;
+  background-color: #0d6efd;
+  color: #fff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 18px;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+  user-select: none;
+}
+
+.left-side button[type="submit"]:hover,
+.left-side button[type="submit"]:focus {
+  background-color: #0a58ca;
+  box-shadow: 0 6px 18px rgba(10, 88, 202, 0.6);
+  outline: none;
+}
+
+/* Mensaje de confirmación o error */
+#message {
+  margin-top: 24px;
+  text-align: center;
+  font-weight: 700;
+  color: #0d6efd;
+  font-family: 'Poppins', sans-serif;
+  user-select: none;
+}
+
+/* Footer (opcional) */
+footer {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-family: 'Poppins', sans-serif;
+  user-select: none;
+}
+
+footer mark {
+  padding: 8px 30px;
+  border-radius: 7px;
+  background-color: #e9f2ff;
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+footer a {
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #003;
+  transition: color 0.3s ease;
+}
+
+footer a:hover,
+footer a:focus {
+  color: #0d6efd;
+  outline: none;
+}
+
+/* ===== RESPONISVE MEJORADO ===== */
+
+/* Tabletas y móviles medianos */
+@media (max-width: 900px) {
+  .container {
+    max-width: 95%;
+    padding: 0 16px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    margin-bottom: 24px;
+  }
+
+  .form-main {
+    flex-direction: column;
+    padding: 24px 16px;
+  }
+
+  .left-side,
+  .right-side {
+    padding: 18px 16px;
+  }
+
+  .separator {
+    width: 100%;
+    height: 1px;
+    margin: 20px 0;
+  }
+}
+
+/* Smartphones (menos de 768px) */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 50px);
+    gap: 10px;
+  }
+
+  .keyboard button {
+    font-size: 1rem;
+    padding: 8px 0;
+  }
+}
+
+/* Smartphones pequeños (menos de 480px) */
+@media (max-width: 480px) {
+  .header {
+    padding: 0 12px;
+  }
+
+  .header .titulo {
+    font-size: 1rem;
+  }
+
+  .header #menuBtn {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+
+  .container {
+    margin: 70px auto 30px;
+    padding: 0 12px;
+  }
+
+  .form-main {
+    padding: 16px 12px;
+    gap: 8px;
+  }
+
+  .left-side,
+  .right-side {
+    padding: 12px 8px;
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 45px);
+    gap: 8px;
+  }
+
+  .keyboard button {
+    font-size: 0.9rem;
+    padding: 6px 0;
+  }
+
+  .keyboard button.wide {
+    grid-column: span 3;
+  }
+
+  .left-side button[type="submit"] {
+    font-size: 1rem;
+    padding: 12px 0;
+  }
+}
+
+/* Asegurar que el footer no tape contenido en móviles */
+@media (max-width: 480px) {
+  footer {
+    bottom: 15px;
+    font-size: 0.9rem;
+  }
+
+  footer mark {
+    padding: 6px 20px;
+    font-size: 0.875rem;
+  }
+
+  footer a {
+    font-size: 16px;
+  }
+}

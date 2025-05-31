@@ -1,131 +1,194 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap');
 
+* {
+  box-sizing: border-box;
+}
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #f4f6f8;
+  margin: 0;
+  padding: 0;
+  color: #2e2e2e;
+  line-height: 1.6;
 }
 
 .header {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  background-color: #263238;
+  color: #fff;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .header .username {
-    font-size: 1.5rem;
-    font-weight: bold;
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 
 .btn-toolbar {
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
+  margin: 24px 0;
+  display: flex;
+  gap: 12px;
+  padding: 0 24px;
+  flex-wrap: wrap;
 }
 
 .btn-toolbar button {
-    margin-right: 10px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
+/* Botón PDF */
+#downloadPagePdf {
+  background-color: #d32f2f;
+  color: #ffffff;
+  border: 1px solid #b71c1c;
+}
+
+#downloadPagePdf:hover {
+  background-color: #ffffff;
+  color: #d32f2f;
+  border: 1px solid #d32f2f;
+}
+
+/* Botón Excel */
+.btn-success {
+  background-color: #388e3c;
+  color: #ffffff;
+  border: 1px solid #2e7d32;
+}
+
+.btn-success:hover {
+  background-color: #ffffff;
+  color: #388e3c;
+  border: 1px solid #388e3c;
+}
+
+/* Secciones */
 section {
-    margin-top: 20px;
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 24px;
+  background-color: #ffffff;
+  padding: 28px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 section h2 {
-    color: #007bff;
-    margin-bottom: 10px;
+  color: #263238;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 1.4rem;
 }
 
+/* Gráficos */
 .chart-container {
-    margin-top: 20px;
-    height: 300px;
-    position: relative;
+  margin-top: 24px;
+  height: 320px;
+  position: relative;
 }
 
+/* Tablas */
 .table-container {
-    margin-top: 20px;
-    overflow-x: auto;
+  margin-top: 20px;
+  overflow-x: auto;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-table,
-th,
-td {
-    border: 1px solid #ddd;
-    text-align: center;
-    padding: 8px;
+table, th, td {
+  border: 1px solid #e0e0e0;
+  text-align: center;
+  padding: 12px;
 }
 
 th {
-    background-color: #007bff;
-    color: white;
+  background-color: #455a64;
+  color: #ffffff;
+  font-weight: 600;
 }
 
+td {
+  background-color: #fcfcfc;
+}
+
+/* Footer */
 footer {
-    text-align: center;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+  text-align: center;
+  padding: 14px;
+  background-color: #263238;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-size: 0.9rem;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
 }
 
-footer p {
-    margin: 0;
-}
-
+/* Formularios */
 .form-group {
-    margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .form-control {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
 }
 
+.form-control:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+  color: #37474f;
+}
+
+select.form-select {
+  font-size: 0.95rem;
+  border-radius: 6px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Botones */
 .btn-primary {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #1565c0;
+  color: white;
+  border: 1px solid #0d47a1;
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+  background-color: #0d47a1;
 }
 
 .btn-secondary {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #6c757d;
+  color: white;
+  border: 1px solid #545b62;
 }
 
 .btn-secondary:hover {
-    background-color: #545b62;
+  background-color: #545b62;
 }
-
-
