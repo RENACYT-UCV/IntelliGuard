@@ -17,7 +17,7 @@
   function logout() {
     document.cookie = 'jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Strict';
     document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure; SameSite=Strict';
-    window.location.href = '../index.html';
+    window.location.href = '../pages/index.html';
   }
   function saveAuth(token, username) {
     document.cookie = `jwt=${token}; path=/; Secure; SameSite=Strict`;

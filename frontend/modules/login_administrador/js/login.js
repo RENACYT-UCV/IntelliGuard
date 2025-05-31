@@ -18,7 +18,7 @@ function login() {
     })
     .then(data => {
         saveAuth(data.access_token,username)
-        window.location.href = 'pages/menu.html';
+        window.location.href = '../pages/menu.html';
     })
     .catch(error => {
         document.getElementById('error-message').style.display = 'block';
