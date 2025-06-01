@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap');
 
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'PT Sans', sans-serif;
     background: linear-gradient(rgba(24, 42, 76, 0.8), rgba(24, 42, 76, 0.8)),
                 url('https://cosasbucket.s3.amazonaws.com/wp-content/uploads/2022/09/04122124/lossy-page1-1200px-Frontis_LosOlivos.tif.jpg') no-repeat center center fixed;
     background-size: cover;
@@ -132,17 +132,7 @@ footer {
 .form-control::placeholder {
     color: rgba(255,255,255,0.5);
 }
-
-.btn-primary {
-    background: linear-gradient(to right, #3c8dbc, #007bff);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-weight: bold;
-    transition: background 0.3s ease;
-}
-
+ 
 .btn-primary:hover {
     background: linear-gradient(to right, #337aa5, #006ae0);
 }
@@ -156,6 +146,10 @@ footer {
     font-weight: bold;
 }
 
+h1, h2, h3 {
+    font-family: 'PT Sans', sans-serif;
+    text-align: center;
+}
 .btn-success:hover {
     background-color: #218838;
 }
@@ -203,7 +197,7 @@ footer {
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    border-radius: 12px;
+    border-radius: 22px;
 }
 
 @keyframes bounceRight {

@@ -27,7 +27,7 @@ body::before {
     linear-gradient(to bottom right, rgba(20, 40, 80, 0.5), rgba(60, 20, 60, 0.4)), /* azul-vino elegante */
     url('https://cosasbucket.s3.amazonaws.com/wp-content/uploads/2022/09/04122124/lossy-page1-1200px-Frontis_LosOlivos.tif.jpg') no-repeat center center fixed;
   background-size: cover;
-  filter: blur(2.5px); /* más suave que 8px */
+  filter: blur(2.5px); 
   z-index: 0;
 }
 
@@ -35,10 +35,10 @@ body::before {
 .container {
   position: relative;
   z-index: 1;
-  background: rgba(40, 60, 105, 0.45); /* azul-violeta translúcido */
+  background: rgba(40, 103, 155, 0.40);  
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3); /* borde sutil blanco */
+  border: 1px solid rgba(255, 255, 255, 0.3); 
   border-radius: 20px;
   padding: 40px 32px;
   width: 100%;
@@ -46,8 +46,6 @@ body::before {
   color: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
-
-
 
 h2 {
   text-align: center;
@@ -135,14 +133,4 @@ button:hover {
   font-size: 14px;
 }
 
-/* Responsive */
-@media screen and (max-width: 480px) {
-  .container {
-    padding: 30px 24px;
-    border-radius: 16px;
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-}
+ 
