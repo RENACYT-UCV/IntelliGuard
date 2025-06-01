@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Personal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/frontend/modules/login_personal/css/login.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="login-box">
+        <h2>Login Personal</h2>
+        <div class="form">
+          <div class="user-box input-icon">
+            <i class="fa-solid fa-envelope"></i>
+            <input
+              type="text"
+              id="username"
+              placeholder="Ingrese su usuario"
+              required
+            />
+          </div>
+          <div class="user-box input-icon">
+            <i class="fa-solid fa-lock"></i>
+            <i
+              class="fa-solid fa-eye toggle-password"
+              onclick="togglePassword()"
+            ></i>
+            <input
+              type="password"
+              id="password"
+              placeholder="Ingrese su contraseña"
+              required
+            />
+          </div>
+
+          <div class="error-message" id="error-message">
+            Usuario o contraseña incorrectos
+          </div>
+          <button onclick="login()">Ingresar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/frontend/modules/login_personal/js/login.js"></script>
+    <script src="/frontend/modules/login_personal/utils/config.js"></script>
+    <script src="/frontend/modules/login_personal/utils/sessionManager.js"></script>
+    <script>
+      function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.querySelector(".toggle-password");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      }
+    </script>
+  </body>
+</html>
