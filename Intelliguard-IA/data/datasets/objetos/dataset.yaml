@@ -1,0 +1,4 @@
+train: C:\Users\ByRaxor27\Documents\sisDataset\train\
+val: C:\Users\ByRaxor27\Documents\sisDataset\val\
+nc: 4
+names: ["0", "1", "2", "3"]

@@ -1,0 +1,5 @@
+numpy==1.24.3
+opencv-python==4.8.0.76
+ultralytics==8.0.196
+imutils==0.5.4
+pathlib==1.0.1 
