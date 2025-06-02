@@ -31,19 +31,41 @@ def test_reconocimiento_facial():
             reconocedor.capturar_rostro(codigo)
             
         elif opcion == "2":
-            ruta = input("Ingrese ruta de la imagen: ")
-            if os.path.exists(ruta):
-                imagen = cv2.imread(ruta)
-                codigo, porcentaje = reconocedor.reconocimiento_facial(imagen)
+            print("\nIniciando reconocimiento facial con cámara web...")
+            print("Presione 'q' para salir")
+            
+            # Iniciar cámara web
+            cap = cv2.VideoCapture(0)
+            
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    print("Error al acceder a la cámara web")
+                    break
                 
+                # Realizar reconocimiento facial
+                codigo, porcentaje = reconocedor.reconocimiento_facial(frame)
+                
+                # Mostrar resultados en tiempo real
                 if codigo:
-                    print(f"\nEstudiante reconocido:")
-                    print(f"Código: {codigo}")
-                    print(f"Similitud: {porcentaje:.2f}%")
+                    cv2.putText(frame, f"Estudiante: {codigo}", (10, 30),
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    cv2.putText(frame, f"Similitud: {porcentaje:.2f}%", (10, 70),
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 else:
-                    print("\nNo se reconoció ningún estudiante")
-            else:
-                print("\nLa imagen no existe")
+                    cv2.putText(frame, "No reconocido", (10, 30),
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                
+                # Mostrar frame
+                cv2.imshow('Reconocimiento Facial', frame)
+                
+                # Salir con 'q'
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            
+            # Liberar recursos
+            cap.release()
+            cv2.destroyAllWindows()
                 
         elif opcion == "3":
             break
