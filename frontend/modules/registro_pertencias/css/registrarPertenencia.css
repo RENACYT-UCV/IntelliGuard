@@ -1,74 +1,179 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-body {
-    background-color: #002244;
-    font-family: "Montserrat", sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+
+:root {
+  --color-primary: #4e73df;
+  --color-secondary: #1cc88a;
+  --color-danger: #e74a3b;
+  --color-warning: #f6c23e;
+  --color-light: #f8f9fc;
+  --color-dark: #1e2431;
+  --color-gray: #a2a9b0;
+  --color-background: #e3e9f7;
 }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #002244;
+  font-family: 'Montserrat', sans-serif;
+  color: var(--color-dark);
+  position: relative;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5)),
+    url('../../../public/reportes/fondo.png') no-repeat center center fixed;
+  background-size: cover;
+  filter: blur(3px);
+  z-index: -1;
+}
+
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f8f9fa;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: rgba(0, 123, 255, 0.8);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  backdrop-filter: blur(6px);
+  margin-bottom: 20px;
 }
 
 .header .username {
-    font-weight: bold;
+  font-weight: 700;
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 10;
+  text-align: center;
 }
 
 .registro-info {
-    text-align: left;
-    margin-bottom: 20px;
+  text-align: left;
+  margin-bottom: 20px;
 }
 
 .info-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .info-label {
-    font-weight: bold;
+  font-weight: bold;
+  color: var(--color-primary);
 }
 
 .objeto-img {
-    max-width: 200px;
-    max-height: 200px;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .registro-result {
-    margin-top: 10px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
+  margin-top: 10px;
+  padding: 20px;
+  background-color: var(--color-light);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
 }
 
 .check-icon {
-    font-size: 72px;
-    margin-bottom: 20px;
+  font-size: 72px;
+  margin-bottom: 20px;
 }
 
 .success-icon {
-    color: #28a745;
+  color: var(--color-secondary);
 }
 
 .error-icon {
-    color: #dc3545;
+  color: var(--color-danger);
 }
 
 .botones {
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn {
+  font-size: 16px;
+  padding: 10px 24px;
+  font-weight: 600;
+  border-radius: 40px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  justify-content: center;
+}
+
+.btn i {
+  transition: transform 0.3s ease;
+}
+
+.btn:hover i {
+  animation: bounceRight 0.6s ease;
+}
+
+@keyframes bounceRight {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+.btn-success {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #17a673;
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, #4e73df, #375ab7);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #375ab7, #2e52a3);
 }

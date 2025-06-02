@@ -21,11 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
         window.open(url, '_blank');
     }
 
-    function validarDatos() {
-        if (!data.estudiante && !data.objeto) {
-            window.open('identificar-estudiante.html', '_blank');
-        }
-    }
+function validarDatos() {
+  // Intenta obtener los datos guardados en localStorage
+  const data = JSON.parse(localStorage.getItem('data')) || {};
+
+  // Si no hay estudiante ni objeto, redirige a la página de identificación
+  if (!data.estudiante && !data.objeto) {
+    window.open('identificar-estudiante.html', '_blank');
+  }
+}
 
     function manejoDeVentanas(event) {
         const { type, payload } = event.data;
