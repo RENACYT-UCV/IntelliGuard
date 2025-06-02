@@ -29,7 +29,7 @@ Intelliguard-IA/
 
 ## Requisitos
 
-- Python 3.8 o superior
+- Python 3.10 o superior
 - OpenCV
 - NumPy
 - Ultralytics (YOLO)
