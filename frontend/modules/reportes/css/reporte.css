@@ -1,50 +1,74 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap');
 
-
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f0f0f0;
+    font-family: 'PT Sans', sans-serif;
+    background: linear-gradient(rgba(24, 42, 76, 0.8), rgba(24, 42, 76, 0.8)),
+                url('https://cosasbucket.s3.amazonaws.com/wp-content/uploads/2022/09/04122124/lossy-page1-1200px-Frontis_LosOlivos.tif.jpg') no-repeat center center fixed;
+    background-size: cover;
     margin: 0;
     padding: 0;
+    color: white;
 }
 
 .header {
-    background-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.8);
     color: white;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.header .username {
+    padding: 12px 24px;
     font-size: 1.5rem;
     font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
 .btn-toolbar {
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
+  width: 100%;
+  padding: 10px 24px 0 24px;
+  position: relative; 
+}
+.centrtros {
+  display: flex;
+  gap: 10px;
+  margin-left: auto; 
 }
 
-.btn-toolbar button {
-    margin-right: 10px;
+
+main {
+    padding: 20px;
 }
 
 section {
-    margin-top: 20px;
-    background-color: white;
+    background: rgba(65, 90, 136, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
     padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 section h2 {
-    color: #007bff;
-    margin-bottom: 10px;
+    color: white;
+    margin-bottom: 16px;
 }
+
+.charts-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.chart-section {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 300px;
+    background: rgba(65, 90, 136, 0.3);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
 
 .chart-container {
     margin-top: 20px;
@@ -57,22 +81,26 @@ section h2 {
     overflow-x: auto;
 }
 
-table {
+.table-container table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 table,
 th,
 td {
-    border: 1px solid #ddd;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     text-align: center;
-    padding: 8px;
+    padding: 10px;
 }
 
 th {
-    background-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.8);
     color: white;
 }
 
@@ -87,45 +115,106 @@ footer {
     width: 100%;
 }
 
-footer p {
-    margin: 0;
-}
-
-.form-group {
-    margin-bottom: 10px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.btn-primary {
-    background-color: #007bff;
+.form-group label {
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+    font-weight: 500;
+    margin-bottom: 6px;
 }
 
+.form-control, .form-select {
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: white;
+}
+
+.form-control::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+ 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background: linear-gradient(to right, #337aa5, #006ae0);
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
+.btn-success {
+    background-color: #28a745;
     border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+}
+
+h1, h2, h3 {
+    font-family: 'PT Sans', sans-serif;
+    text-align: center;
+}
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.filters-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filters-section .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.filters-section .row.g-3 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center; /* ← esto es lo importante */
+    justify-content: space-between;
+}
+
+.filters-section .col-md-3 {
+    flex: 1 1 calc(25% - 20px);
+    min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .charts-row {
+        flex-direction: column;
+    }
+    .filters-section .col-md-3 {
+        flex: 1 1 100%;
+    }
+}
+
+#consultarButton {
+    height: 48px;
     padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 22px;
 }
 
-.btn-secondary:hover {
-    background-color: #545b62;
+@keyframes bounceRight {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
 }
 
+.btn i {
+    transition: transform 0.3s ease;
+}
 
+.btn:hover i {
+    animation: bounceRight 0.6s ease;
+}
+
+/* Más border-radius para los botones */
+.btn {
+    border-radius: 16px !important; /* antes tenías 6px o 25px */
+}

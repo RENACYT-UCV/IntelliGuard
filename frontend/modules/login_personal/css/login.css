@@ -1,120 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #002244;
-    margin: 0;
-}
-.container {
-    display: flex;
-    background: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    max-width: 800px;
-    width: 100%;
-}
-.login-box, .keyboard-box {
-    padding: 20px;
-    width: 50%;
-}
-.login-box {
-    background: #f9f9f9;
-}
-.keyboard-box {
-    background: #ffffff;
-    border-left: 1px solid #e0e0e0;
-}
-h1 {
-    margin: 0;
-    padding-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-}
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
-}
-input[type="text"], input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
-.btn {
-    background: #003366;
-    color: #fff;
-    padding: 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-.btn:hover {
-    background: #002244;
-}
-.keyboard {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-.keyboard button {
-    padding: 15px;
-    font-size: 18px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    background: #f0f0f0;
-}
-.keyboard button:active {
-    background: #ccc;
-}
-.keyboard-box h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #333;
-}
-.forgot {
-    display: block;
-    margin-top: 10px;
-    text-align: center;
-    color: #003366;
-    text-decoration: none;
-}
-.forgot:hover {
-    text-decoration: underline;
-}
-.tutorial-link {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-    color: #e60000;
-    text-decoration: none;
-}
-.tutorial-link:hover {
-    text-decoration: underline;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.error-message{
-  display: none;
-  background-color: white;
-  color: red;
-  text-align: center;
-  border-radius: 100px;
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: url('https://cosasbucket.s3.amazonaws.com/wp-content/uploads/2022/09/04122124/lossy-page1-1200px-Frontis_LosOlivos.tif.jpg') no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), /* capa oscura ligera */
+    linear-gradient(to bottom right, rgba(20, 40, 80, 0.5), rgba(60, 20, 60, 0.4)), /* azul-vino elegante */
+    url('https://cosasbucket.s3.amazonaws.com/wp-content/uploads/2022/09/04122124/lossy-page1-1200px-Frontis_LosOlivos.tif.jpg') no-repeat center center fixed;
+  background-size: cover;
+  filter: blur(2.5px); 
+  z-index: 0;
+}
+
+
+.container {
+  position: relative;
+  z-index: 1;
+  background: rgba(40, 103, 155, 0.40);  
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3); 
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 380px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 25px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.user-box {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.user-box input {
+  width: 100%;
+  padding: 14px 44px 14px 40px;
+  border-radius: 30px;
+  border: 1.5px solid white;
+  background: transparent;
+  font-size: 15px;
+  outline: none;
+  color: #fff;
+}
+
+.user-box input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-icon {
+  position: relative;
+}
+
+.input-icon i.fa-envelope,
+.input-icon i.fa-lock {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 16px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  color: #fff;
+}
+
+button {
+  width: auto;
+  padding: 10px 24px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, #4fc3f7, #1976d2); /* degradado azul claro a azul fuerte */
+  color: white;
+  font-weight: bold;
+  border: none;
+  margin-top: 16px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+
+.error-message {
+  display: none;
+  margin-top: 12px;
+  text-align: center;
+  background: #fff;
+  color: #b61119;
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+ 

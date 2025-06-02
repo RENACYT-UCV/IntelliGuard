@@ -1,82 +1,172 @@
-/* Estilos personalizados */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..800&display=swap');
+
+:root {
+  --primary: #4e73df;
+  --secondary: #1cc88a;
+  --accent: #9b59b6;
+  --background: #eef2fb;
+  --glass-white: rgba(255, 255, 255, 0.2);
+  --text-light: #f9f9f9;
+}
 
 body {
-    background-color: #002244; 
-    font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
+  color: var(--color-dark);
+  line-height: 1.6;
+  position: relative;
+  min-height: 100vh;
 }
-  
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+
+/* Fondo con imagen + overlay moderno */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5)),
+    url('../../../public/reportes/fondo.png') no-repeat center center fixed;
+  background-size: cover;
+  filter: blur(3px);
+  z-index: -1;
 }
-  
-.card {
-    transition: transform 0.3s;
-    max-width: 300px;
-    height: 250px;
-    text-decoration: none;
-}
-  
-.card:hover {
-    transform: scale(1.05);
-}
-  
-.card-img-top {
-    height: 120px;
-    object-fit: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-  
-.card-img-top img {
-    max-height: 100%;
-    max-width: 100%;
-}
-  
-.card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-  
+
+/* HEADER */
 .header {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    padding: 10px;
-    background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 24px;
+  background-color: rgba(0, 123, 255, 0.8);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+  justify-content: space-between;
+  backdrop-filter: blur(6px);
+  margin-bottom: 20px;
 }
-  
+
 .header-username {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-  
-.header .username {
-    font-weight: bold;
-}
-  
+
+.header .username,
 .header .rol {
-    font-weight: bold;
+  font-weight: 700;
+  color: #ffffff;
 }
-  
-.header .logout-btn {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 5px;
-    border-radius: 5px;
+
+.logout-btn {
+  background: linear-gradient(to right, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
-  
-@media (max-width: 767px) {
-    .card-img-top {
-        height: 150px;
-    }
+
+.logout-btn:hover {
+  background: linear-gradient(to right, #c0392b, #96281b);
+}
+
+/* CONTENEDOR PRINCIPAL */
+.container.content-Personal {
+  max-width: 420px;
+  margin: 30px auto;
+  padding: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 24px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* TARJETAS */
+.card {
+  width: 260px;
+  height: 260px;
+  background: rgba(78, 115, 223, 0.15); /* fondo azul suave y transparente */
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  color: #2c3e50;
+  border: 1px solid #dee6fb;
+  backdrop-filter: blur(6px);
+}
+
+.card:hover {
+  background: rgba(78, 115, 223, 0.25);
+  transform: scale(1.05);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+}
+
+/* Contenido de tarjeta */
+.card-body {
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-body i {
+  font-size: 2.7rem;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.card-title,
+.card-body strong {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  color: #2e2e2e;
+}
+
+/* Botones internos */
+.card-body .btn {
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  background: linear-gradient(to right, var(--primary), #375ab7);
+  color: white;
+  border: none;
+  transition: 0.3s ease;
+}
+
+.card-body .btn:hover {
+  background: linear-gradient(to right, #375ab7, #2c458d);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .card {
+    width: 90%;
+    height: auto;
+  }
+
+  .container.content-Personal {
+    padding: 20px;
+    gap: 24px;
+  }
+
+  .header-username {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }
