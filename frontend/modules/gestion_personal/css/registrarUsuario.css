@@ -8,10 +8,6 @@
 }
 
 body {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   font-family: 'Poppins', sans-serif;
   color: #343a40;
   margin: 0;
@@ -22,7 +18,24 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative; /* Necesario para que ::before se posicione correctamente */
+  z-index: 0;
 }
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    
+    
+    url('../../../assets/Reportes/fondo.png') no-repeat center center fixed;
+  background-size: cover;
+  filter: blur(1px); /* ← Menos difuminado */
+  z-index: -1;
+}
+
+
+
 
 /* HEADER fijo arriba */
 .header {
@@ -79,7 +92,7 @@ h1 {
   text-align: center;
   margin-bottom: 30px;
   font-size: 2rem; /* 32px */
-  color: #222;
+  color: #dad8d8;
   font-weight: 600;
   user-select: none;
 }
