@@ -44,6 +44,9 @@ class DeteccionObjetos:
             tuple: (etiqueta_objeto, imagen_recortada) o (None, None) si no se detecta
         """
         try:
+            if self.modelo is None:
+                print("Error: El modelo de objetos no está cargado. No se puede realizar la detección.")
+                return None, None
             # Realizar predicción
             resultados = self.modelo(imagen)
             
@@ -77,10 +80,14 @@ class DeteccionObjetos:
             if not os.path.exists(DATASET_OBJETOS):
                 print("Dataset de objetos no encontrado")
                 return
-                
+            # Permitir las clases globales necesarias para PyTorch 2.6+
+            import torch
+            from ultralytics.nn.tasks import DetectionModel
+            from torch.nn.modules.container import Sequential
+            from ultralytics.nn.modules import Conv
+            torch.serialization.add_safe_globals([DetectionModel, Sequential, Conv])
             # Configurar entrenamiento
             self.modelo = YOLO('yolov8n.pt')  # Modelo base
-            
             # Entrenar modelo
             self.modelo.train(
                 data=os.path.join(DATASET_OBJETOS, 'dataset.yaml'),
@@ -89,12 +96,10 @@ class DeteccionObjetos:
                 batch=16,
                 name='entrenamiento_objetos'
             )
-            
             # Guardar modelo
             os.makedirs(os.path.dirname(MODELO_OBJETOS), exist_ok=True)
             self.modelo.save(MODELO_OBJETOS)
             print("Modelo de objetos entrenado y guardado exitosamente")
-            
         except Exception as e:
             print(f"Error al entrenar modelo: {str(e)}")
             

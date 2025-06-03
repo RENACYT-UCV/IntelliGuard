@@ -2,14 +2,15 @@ import os
 import cv2
 from pathlib import Path
 import sys
+from datetime import datetime
 
 # Agregar el directorio raíz al path
 ROOT_DIR = Path(__file__).parent
 sys.path.append(str(ROOT_DIR))
 
 from core.reconocimiento.facial import ReconocimientoFacial
-from core.objetos.deteccion import DeteccionObjetos
 from core.pertenencias.gestion import GestionPertenencias
+from utils.config import PERTENENCIAS_DIR
 
 def test_reconocimiento_facial():
     """Prueba el módulo de reconocimiento facial"""
@@ -73,141 +74,179 @@ def test_reconocimiento_facial():
         else:
             print("\nOpción inválida")
 
-def test_deteccion_objetos():
-    """Prueba el módulo de detección de objetos"""
-    print("\n=== Prueba de Detección de Objetos ===")
-    
-    # Inicializar detector
-    detector = DeteccionObjetos()
-    
-    # Menú de opciones
-    while True:
-        print("\n1. Detectar objeto en imagen")
-        print("2. Entrenar modelo")
-        print("3. Volver")
-        
-        opcion = input("\nSeleccione una opción: ")
-        
-        if opcion == "1":
-            ruta = input("Ingrese ruta de la imagen: ")
-            if os.path.exists(ruta):
-                etiqueta, objeto = detector.procesar_imagen(ruta)
-                
-                if etiqueta:
-                    print(f"\nObjeto detectado:")
-                    print(f"Tipo: {etiqueta}")
-                    
-                    # Guardar imagen recortada
-                    if objeto is not None:
-                        ruta_guardar = os.path.join(
-                            os.path.dirname(ruta),
-                            f"objeto_{etiqueta}.jpg"
-                        )
-                        cv2.imwrite(ruta_guardar, objeto)
-                        print(f"Imagen guardada en: {ruta_guardar}")
-                else:
-                    print("\nNo se detectó ningún objeto")
-            else:
-                print("\nLa imagen no existe")
-                
-        elif opcion == "2":
-            detector.entrenar_modelo()
-            
-        elif opcion == "3":
-            break
-            
-        else:
-            print("\nOpción inválida")
-
 def test_gestion_pertenencias():
     """Prueba el módulo de gestión de pertenencias"""
-    print("\n=== Prueba de Gestión de Pertenencias ===")
-    
-    # Inicializar gestor
+    print("\n=== Gestión de Pertenencias ===")
     gestor = GestionPertenencias()
+    reconocedor = ReconocimientoFacial()
     
-    # Menú de opciones
     while True:
-        print("\n1. Registrar entrada")
-        print("2. Registrar salida")
+        print("\n1. Registrar ENTRADA de pertenencia")
+        print("2. Registrar SALIDA de pertenencia")
         print("3. Consultar pertenencias")
         print("4. Volver")
-        
         opcion = input("\nSeleccione una opción: ")
         
         if opcion == "1":
-            codigo = input("Código de estudiante: ")
-            tipo = input("Tipo de objeto: ")
-            descripcion = input("Descripción: ")
-            
-            # Capturar imagen
-            ruta = input("Ruta de imagen (opcional): ")
-            imagen = None
-            if ruta and os.path.exists(ruta):
-                imagen = cv2.imread(ruta)
-                
-            if gestor.registrar_entrada(codigo, tipo, descripcion, imagen):
-                print("\nEntrada registrada exitosamente")
-            else:
-                print("\nError al registrar entrada")
-                
+            print("\nReconociendo estudiante...")
+            cap = cv2.VideoCapture(0)
+            codigo_estudiante = None
+            reconocido = False
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    print("Error al acceder a la cámara web")
+                    break
+                codigo, porcentaje = reconocedor.reconocimiento_facial(frame)
+                if codigo:
+                    cv2.putText(frame, f"Estudiante: {codigo}", (10, 30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    cv2.putText(frame, f"Similitud: {porcentaje:.2f}%", (10, 70), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    if porcentaje > 60 and not reconocido:
+                        codigo_estudiante = codigo
+                        reconocido = True
+                        print(f"\n¡Estudiante reconocido: {codigo_estudiante}!")
+                        break
+                else:
+                    cv2.putText(frame, "No reconocido", (10, 30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.imshow('Reconocimiento Facial', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            cap.release()
+            cv2.destroyAllWindows()
+            if not codigo_estudiante:
+                print("No se reconoció al estudiante.")
+                continue
+            print("\nTomando foto del objeto...")
+            print("Presione 'c' para capturar la foto, 'q' para cancelar")
+            cap = cv2.VideoCapture(0)
+            foto_tomada = False
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    print("Error al acceder a la cámara web")
+                    break
+                cv2.imshow('Captura de Objeto', frame)
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord('c'):
+                    tipo_objeto = input("Tipo de objeto: ")
+                    descripcion = input("Descripción adicional (opcional): ")
+                    if gestor.registrar_entrada(codigo_estudiante, tipo_objeto, descripcion, frame):
+                        print("\nEntrada registrada exitosamente")
+                    else:
+                        print("\nError al registrar entrada")
+                    foto_tomada = True
+                    break
+                elif key == ord('q'):
+                    break
+            cap.release()
+            cv2.destroyAllWindows()
+            if not foto_tomada:
+                print("\nNo se tomó ninguna foto")
         elif opcion == "2":
-            codigo = input("Código de estudiante: ")
-            tipo = input("Tipo de objeto: ")
-            
-            if gestor.registrar_salida(codigo, tipo):
+            print("\nReconociendo estudiante para RETIRO...")
+            cap = cv2.VideoCapture(0)
+            codigo_estudiante = None
+            reconocido = False
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    print("Error al acceder a la cámara web")
+                    break
+                codigo, porcentaje = reconocedor.reconocimiento_facial(frame)
+                if codigo:
+                    cv2.putText(frame, f"Estudiante: {codigo}", (10, 30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    cv2.putText(frame, f"Similitud: {porcentaje:.2f}%", (10, 70), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    if porcentaje > 60 and not reconocido:
+                        codigo_estudiante = codigo
+                        reconocido = True
+                        print(f"\n¡Estudiante reconocido: {codigo_estudiante}!")
+                        break
+                else:
+                    cv2.putText(frame, "No reconocido", (10, 30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.imshow('Reconocimiento Facial', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            cap.release()
+            cv2.destroyAllWindows()
+            if not codigo_estudiante:
+                print("No se reconoció al estudiante.")
+                continue
+            tipo_objeto = input("Tipo de objeto a retirar: ")
+            if gestor.registrar_salida(codigo_estudiante, tipo_objeto):
                 print("\nSalida registrada exitosamente")
             else:
                 print("\nError al registrar salida")
-                
         elif opcion == "3":
-            codigo = input("Código de estudiante (opcional): ")
+            print("\nReconociendo estudiante...")
+            cap = cv2.VideoCapture(0)
+            codigo_estudiante = None
+            reconocido = False
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    print("Error al acceder a la cámara web")
+                    break
+                codigo, porcentaje = reconocedor.reconocimiento_facial(frame)
+                if codigo:
+                    cv2.putText(frame, f"Estudiante: {codigo}", (10, 30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    cv2.putText(frame, f"Similitud: {porcentaje:.2f}%", (10, 70), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    if porcentaje > 60 and not reconocido:
+                        codigo_estudiante = codigo
+                        reconocido = True
+                        print(f"\n¡Estudiante reconocido: {codigo_estudiante}!")
+                        break
+                else:
+                    cv2.putText(frame, "No reconocido", (10, 30), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.imshow('Reconocimiento Facial', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            cap.release()
+            cv2.destroyAllWindows()
+            if not codigo_estudiante:
+                print("No se reconoció al estudiante.")
+                continue
             estado = input("Estado (ENTREGADO/RETIRADO, opcional): ")
-            
-            pertenencias = gestor.obtener_pertenencias(
-                codigo if codigo else None,
-                estado if estado else None
-            )
-            
+            pertenencias = gestor.obtener_pertenencias(codigo_estudiante, estado if estado else None)
             if pertenencias:
                 print("\nPertenencias encontradas:")
                 for p in pertenencias:
                     print(f"\nID: {p[0]}")
-                    print(f"Estudiante: {p[1]}")
                     print(f"Tipo: {p[2]}")
                     print(f"Descripción: {p[3]}")
-                    print(f"Estado: {p[6]}")
-                    print(f"Fecha entrada: {p[4]}")
-                    if p[5]:  # Fecha salida
-                        print(f"Fecha salida: {p[5]}")
+                    print(f"Ruta imagen: {p[4]}")
+                    print(f"Fecha entrada: {p[5]}")
+                    print(f"Fecha salida: {p[6]}")
+                    print(f"Estado: {p[7]}")
             else:
                 print("\nNo se encontraron pertenencias")
-                
         elif opcion == "4":
             break
-            
         else:
             print("\nOpción inválida")
 
 def main():
-    """Función principal"""
     while True:
         print("\n=== Sistema Intelliguard-IA ===")
         print("\n1. Reconocimiento Facial")
-        print("2. Detección de Objetos")
-        print("3. Gestión de Pertenencias")
-        print("4. Salir")
+        print("2. Gestión de Pertenencias")
+        print("3. Salir")
         
         opcion = input("\nSeleccione una opción: ")
         
         if opcion == "1":
             test_reconocimiento_facial()
         elif opcion == "2":
-            test_deteccion_objetos()
-        elif opcion == "3":
             test_gestion_pertenencias()
-        elif opcion == "4":
-            print("\n¡Hasta pronto!")
+        elif opcion == "3":
             break
         else:
             print("\nOpción inválida")

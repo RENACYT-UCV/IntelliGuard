@@ -7,6 +7,7 @@ class Database:
         self.cursor = None
         self.conectar()
         self.crear_tablas()
+        self.migrar_tablas()
         
     def conectar(self):
         """Establece conexión con la base de datos"""
@@ -37,9 +38,10 @@ class Database:
                     codigo_estudiante INTEGER,
                     tipo_objeto TEXT NOT NULL,
                     descripcion TEXT,
+                    ruta_imagen TEXT,
                     fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     fecha_salida TIMESTAMP,
-                    estado TEXT DEFAULT 'en_guardia',
+                    estado TEXT DEFAULT 'ENTREGADO',
                     FOREIGN KEY (codigo_estudiante) REFERENCES estudiantes(codigo)
                 )
             ''')
@@ -49,6 +51,18 @@ class Database:
             
         except Exception as e:
             print(f"Error al crear tablas: {str(e)}")
+
+    def migrar_tablas(self):
+        """Agrega la columna ruta_imagen si no existe en pertenencias"""
+        try:
+            self.cursor.execute("PRAGMA table_info(pertenencias)")
+            columns = [col[1] for col in self.cursor.fetchall()]
+            if 'ruta_imagen' not in columns:
+                self.cursor.execute("ALTER TABLE pertenencias ADD COLUMN ruta_imagen TEXT;")
+                self.conn.commit()
+                print("Columna ruta_imagen agregada correctamente a pertenencias.")
+        except Exception as e:
+            print(f"Error en migración de tablas: {str(e)}")
             
     def cerrar(self):
         """Cierra la conexión a la base de datos"""

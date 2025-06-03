@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 import sys
+import cv2
 
 # Agregar el directorio raíz al path
 ROOT_DIR = Path(__file__).parent.parent.parent
@@ -14,6 +15,41 @@ class GestionPertenencias:
     def __init__(self):
         """Inicializa el gestor de pertenencias"""
         self.db = Database()
+        
+    def registrar_estudiante(self, codigo_estudiante):
+        """
+        Registra un estudiante en la base de datos si no existe
+        
+        Args:
+            codigo_estudiante: Código del estudiante
+            
+        Returns:
+            bool: True si el estudiante existe o se registró exitosamente
+        """
+        try:
+            # Verificar si el estudiante ya existe
+            estudiante = self.db.obtener_uno(
+                "SELECT * FROM estudiantes WHERE codigo = ?",
+                (codigo_estudiante,)
+            )
+            
+            if estudiante:
+                return True
+                
+            # Si no existe, registrarlo
+            self.db.ejecutar(
+                """
+                INSERT INTO estudiantes (codigo, nombre, apellido)
+                VALUES (?, ?, ?)
+                """,
+                (codigo_estudiante, f"Estudiante {codigo_estudiante}", "No especificado")
+            )
+            print(f"Estudiante {codigo_estudiante} registrado automáticamente")
+            return True
+            
+        except Exception as e:
+            print(f"Error al registrar estudiante: {str(e)}")
+            return False
         
     def registrar_entrada(self, codigo_estudiante, tipo_objeto, descripcion, imagen=None):
         """
@@ -29,14 +65,8 @@ class GestionPertenencias:
             bool: True si se registró exitosamente
         """
         try:
-            # Verificar estudiante
-            estudiante = self.db.obtener_uno(
-                "SELECT * FROM estudiantes WHERE codigo = ?",
-                (codigo_estudiante,)
-            )
-            
-            if not estudiante:
-                print(f"Estudiante {codigo_estudiante} no encontrado")
+            # Registrar estudiante si no existe
+            if not self.registrar_estudiante(codigo_estudiante):
                 return False
                 
             # Guardar imagen si se proporciona
@@ -137,24 +167,18 @@ class GestionPertenencias:
         try:
             query = "SELECT * FROM pertenencias"
             params = []
-            
             if codigo_estudiante or estado:
                 query += " WHERE"
-                
                 if codigo_estudiante:
                     query += " codigo_estudiante = ?"
                     params.append(codigo_estudiante)
-                    
                 if estado:
                     if codigo_estudiante:
                         query += " AND"
-                    query += " estado = ?"
-                    params.append(estado)
-                    
+                    query += " UPPER(estado) = ?"
+                    params.append(estado.upper())
             query += " ORDER BY fecha_entrada DESC"
-            
             return self.db.obtener_todos(query, tuple(params))
-            
         except Exception as e:
             print(f"Error al obtener pertenencias: {str(e)}")
             return []
