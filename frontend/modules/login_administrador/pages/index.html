@@ -1,86 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../Css/login.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <title>Login Administrador</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../Css/login.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>Login Administrador</title>
 </head>
+
 <body>
-    <div class="container">
-<div class="login-box">
-  <h1>LOGIN ADMINISTRADOR</h1>
+  <div class="container">
+    <div class="login-box">
+      <h1>LOGIN ADMINISTRADOR</h1>
 
-  <div class="input-icon-wrapper">
-    <div class="icon-container">
-      <i class="fa-solid fa-envelope"></i>
-    </div>
-    <input type="text" id="username" placeholder="Ingrese su usuario" autocomplete="username" />
-  </div>
+      <div class="input-icon-wrapper">
+        <div class="icon-container">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+        <input type="text" id="username" placeholder="Ingrese su usuario" autocomplete="username" />
+      </div>
 
-  <div class="input-icon-wrapper">
-    <div class="icon-container">
-      <i class="fa-solid fa-lock"></i>
-    </div>
-    <input type="password" id="password" placeholder="Ingrese su contraseñaa" autocomplete="current-password" readonly />
-  </div>
+      <div class="input-icon-wrapper">
+        <div class="icon-container">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <input type="password" id="password" placeholder="Ingrese su contraseña" autocomplete="current-password"
+          readonly />
+      </div>
 
-  <button class="btn" onclick="login()">Ingresar</button>
+      <button class="btn" onclick="login()">Ingresar</button>
 
-  <div class="error-message" id="error-message">
-    Usuario o contraseña incorrectos
-  </div>
-</div>
-
-      <div class="keyboard-box">
-    <h2>Teclado Virtual</h2>
-
-    <div class="digit-indicators">
-      <span class="dot" id="dot-1"></span>
-      <span class="dot" id="dot-2"></span>
-      <span class="dot" id="dot-3"></span>
-      <span class="dot" id="dot-4"></span>
-      <span class="dot" id="dot-5"></span>
-      <span class="dot" id="dot-6"></span>
+      <div class="error-message" id="error-message">
+        Usuario o contraseña incorrectos
+      </div>
     </div>
 
-    <hr />
-   <p>Clave de 6 dígitos</p>
-    <div class="keyboard" id="keyboard">
-    
+    <div class="keyboard-box">
+      <h2>Teclado Virtual</h2>
+
+      <div class="digit-indicators">
+        <span class="dot" id="dot-1"></span>
+        <span class="dot" id="dot-2"></span>
+        <span class="dot" id="dot-3"></span>
+        <span class="dot" id="dot-4"></span>
+        <span class="dot" id="dot-5"></span>
+        <span class="dot" id="dot-6"></span>
+      </div>
+
+      <hr />
+      <p>Clave de 6 dígitos</p>
+      <div class="keyboard" id="keyboard">
+
         <div class="row">
-            <button onclick="agregarDigito(1)">1</button>
-            <button onclick="agregarDigito(2)">2</button>
-            <button onclick="agregarDigito(3)">3</button>
-            <button onclick="agregarDigito(4)">4</button>
-            <button onclick="agregarDigito(5)">5</button>
-            <button onclick="eliminarDigito()">
-                <i class="fa-solid fa-delete-left"></i>
-            </button>
+          <button onclick="agregarDigito(1)">1</button>
+          <button onclick="agregarDigito(2)">2</button>
+          <button onclick="agregarDigito(3)">3</button>
+          <button onclick="agregarDigito(4)">4</button>
+          <button onclick="agregarDigito(5)">5</button>
+          <button onclick="eliminarDigito()">
+            <i class="fa-solid fa-delete-left"></i>
+          </button>
         </div>
 
 
         <div class="row">
-            <button onclick="agregarDigito(6)">6</button>
-            <button onclick="agregarDigito(7)">7</button>
-            <button onclick="agregarDigito(8)">8</button>
-            <button onclick="agregarDigito(9)">9</button>
-            <button onclick="agregarDigito(0)">0</button>
-            <button onclick="limpiarDigitos()">
-                <i class="fa-solid fa-trash"></i>
-            </button>
+          <button onclick="agregarDigito(6)">6</button>
+          <button onclick="agregarDigito(7)">7</button>
+          <button onclick="agregarDigito(8)">8</button>
+          <button onclick="agregarDigito(9)">9</button>
+          <button onclick="agregarDigito(0)">0</button>
+          <button onclick="limpiarDigitos()">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
-    </div>
+      </div>
 
- 
-</div>
+
     </div>
-<script src="/frontend/modules/login_administrador/js/login.js"></script>
-<script src="../Utils/config.js"></script>
-<script src="../Utils/sessionManager.js"></script>
+  </div>
+
+  <script>
+    // Variables globales
+    let password = '';
+    const MAX_LENGTH = 6;
+
+    // Funciones del teclado virtual
+    function updateDots() {
+      for (let i = 1; i <= MAX_LENGTH; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        dot.classList.toggle('filled', i <= password.length);
+      }
+    }
+
+    function agregarDigito(digito) {
+      if (password.length < MAX_LENGTH) {
+        password += digito;
+        document.getElementById('password').value = password;
+        updateDots();
+
+        if (password.length === MAX_LENGTH) {
+          document.getElementById('error-message').style.display = 'none';
+        }
+      }
+    }
+
+    function eliminarDigito() {
+      if (password.length > 0) {
+        password = password.slice(0, -1);
+        document.getElementById('password').value = password;
+        updateDots();
+      }
+    }
+
+    function limpiarDigitos() {
+      password = '';
+      document.getElementById('password').value = password;
+      updateDots();
+    }
+
+    async function login() {
+      const username = document.getElementById('username').value;
+
+      if (!username || password.length !== MAX_LENGTH) {
+        document.getElementById('error-message').style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/auth/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            usuario: username,
+            contraseña: password
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Credenciales inválidas');
+        }
+
+        const data = await response.json();
+        // Guardar el token en localStorage
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('username', username);
+        window.location.href = '../pages/menu.html';
+      } catch (error) {
+        document.getElementById('error-message').style.display = 'block';
+        limpiarDigitos();
+      }
+    }
+  </script>
 </body>
+
 </html>
