@@ -1,43 +1,78 @@
-function login() {
-    var username = document.getElementById('username').value;
-    var password = document.getElementById('password').value;
-        fetch(API_URL + '/login/administrador', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ usuario: username, contraseña: password })
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Error al iniciar sesión. Por favor, verifica tus credenciales.');
-            }
-        })
-        .then(data => {
-            saveAuth(data.access_token, username);
-            window.location.href = 'pages/menu.html';
-        })
-        .catch(error => {
-            document.getElementById('error-message').style.display = 'block';
-        });
+import { API_CONFIG } from '../../../js/config.js';
+import { saveAuth } from '../utils/sessionManager.js';
+
+let password = '';
+const MAX_LENGTH = 6;
+
+function updateDots() {
+    for (let i = 1; i <= MAX_LENGTH; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        dot.classList.toggle('filled', i <= password.length);
+    }
 }
 
-function agregarDigito(digit) {
-    var password = document.getElementById('password');
-    if (password.value.length < 6) {
-        password.value += digit;
+function agregarDigito(digito) {
+    if (password.length < MAX_LENGTH) {
+        password += digito;
+        document.getElementById('password').value = password;
+        updateDots();
+
+        if (password.length === MAX_LENGTH) {
+            document.getElementById('error-message').style.display = 'none';
+        }
     }
 }
 
 function eliminarDigito() {
-    var password = document.getElementById('password');
-    password.value = password.value.slice(0, -1);
+    if (password.length > 0) {
+        password = password.slice(0, -1);
+        document.getElementById('password').value = password;
+        updateDots();
+    }
 }
 
 function limpiarDigitos() {
-    var password = document.getElementById('password');
-    password.value = '';
+    password = '';
+    document.getElementById('password').value = password;
+    updateDots();
 }
+
+async function login() {
+    const username = document.getElementById('username').value;
+
+    if (!username || password.length !== MAX_LENGTH) {
+        document.getElementById('error-message').style.display = 'block';
+        return;
+    }
+
+    try {
+        const response = await fetch(API_CONFIG.AUTH.LOGIN_PERSONAL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                usuario: username,
+                contraseña: password
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Credenciales inválidas');
+        }
+
+        const data = await response.json();
+        saveAuth(data.access_token, username);
+        window.location.href = '../pages/menu.html';
+    } catch (error) {
+        document.getElementById('error-message').style.display = 'block';
+        limpiarDigitos();
+    }
+}
+
+// Exportar las funciones para uso global
+window.agregarDigito = agregarDigito;
+window.eliminarDigito = eliminarDigito;
+window.limpiarDigitos = limpiarDigitos;
+window.login = login;
 
