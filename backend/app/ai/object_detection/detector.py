@@ -1,3 +1,4 @@
+from ultralytics import YOLO
 import cv2
 import numpy as np
 from typing import List, Dict, Optional
@@ -6,6 +7,88 @@ import os
 from ...config.config import config
 
 logger = logging.getLogger(__name__)
+
+class DetectorObjetos:
+    def __init__(self):
+        self.model_path = config.OBJECT_DETECTION_MODEL
+        self.model = YOLO(self.model_path)
+        
+    def detectar_objetos(self, imagen):
+        """Detecta objetos en una imagen usando YOLOv8"""
+        # Realizar la detección
+        resultados = self.model(imagen)
+        
+        # Procesar resultados
+        detecciones = []
+        for resultado in resultados:
+            boxes = resultado.boxes
+            for box in boxes:
+                # Obtener coordenadas y confianza
+                x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
+                confianza = float(box.conf[0].cpu().numpy())
+                clase_id = int(box.cls[0].cpu().numpy())
+                clase = resultado.names[clase_id]
+                
+                detecciones.append({
+                    'clase': clase,
+                    'confianza': confianza,
+                    'bbox': [int(x1), int(y1), int(x2), int(y2)]
+                })
+        
+        return detecciones
+    
+    def comparar_objetos(self, imagen1, imagen2):
+        """Compara dos imágenes para determinar si contienen objetos similares"""
+        # Detectar objetos en ambas imágenes
+        detecciones1 = self.detectar_objetos(imagen1)
+        detecciones2 = self.detectar_objetos(imagen2)
+        
+        # Contar objetos por clase en cada imagen
+        objetos1 = {}
+        objetos2 = {}
+        
+        for det in detecciones1:
+            clase = det['clase']
+            objetos1[clase] = objetos1.get(clase, 0) + 1
+            
+        for det in detecciones2:
+            clase = det['clase']
+            objetos2[clase] = objetos2.get(clase, 0) + 1
+        
+        # Calcular similitud
+        similitud = 0
+        total_objetos = 0
+        
+        for clase in set(objetos1.keys()) | set(objetos2.keys()):
+            count1 = objetos1.get(clase, 0)
+            count2 = objetos2.get(clase, 0)
+            similitud += min(count1, count2)
+            total_objetos += max(count1, count2)
+        
+        if total_objetos == 0:
+            return 0
+            
+        return (similitud / total_objetos) * 100
+    
+    def guardar_detecciones(self, imagen, detecciones, output_path):
+        """Guarda una imagen con las detecciones marcadas"""
+        img_copy = imagen.copy()
+        
+        for det in detecciones:
+            x1, y1, x2, y2 = det['bbox']
+            clase = det['clase']
+            confianza = det['confianza']
+            
+            # Dibujar bbox
+            cv2.rectangle(img_copy, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            
+            # Agregar etiqueta
+            label = f"{clase} {confianza:.2f}"
+            cv2.putText(img_copy, label, (x1, y1-10), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        
+        cv2.imwrite(output_path, img_copy)
+        return True
 
 class ObjectDetector:
     """Clase para detección de objetos usando YOLO"""

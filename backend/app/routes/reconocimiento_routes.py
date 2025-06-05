@@ -1,18 +1,11 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from ..utils.role_decorador import role_required
+from ..ai.face_recognition.facial import ReconocimientoFacial
 import cv2
 import numpy as np
 import base64
-import sys
-from pathlib import Path
 import os
-
-# Agregar el directorio de IA al path
-IA_DIR = Path(__file__).parent.parent.parent.parent / 'Intelliguard-IA'
-sys.path.append(str(IA_DIR))
-
-from core.reconocimiento.facial import ReconocimientoFacial
 
 reconocimiento_bp = Blueprint('reconocimiento', __name__)
 reconocedor = ReconocimientoFacial()

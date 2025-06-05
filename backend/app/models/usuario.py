@@ -1,108 +1,88 @@
-from dataclasses import dataclass
-from typing import Optional
-from ..database.db_manager import db
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from . import Base
 
-@dataclass
-class Usuario:
-    id_usuario: int
-    usuario: str
-    hash_contraseña: str
-    id_rol: int
-    rol: str
+class Usuario(Base):
+    __tablename__ = 'usuarios'
 
-class UsuarioModel:
-    TABLA_USUARIOS = 'usuarios'
-    TABLA_ROLES = 'rol_usuario'
+    id_usuario = Column(Integer, primary_key=True)
+    usuario = Column(String(50), unique=True, nullable=False)
+    hash_contraseña = Column(String(255), nullable=False)
+    id_rol = Column(Integer, ForeignKey('rol_usuario.id'), nullable=False)
+    
+    # Relación con el rol
+    rol = relationship("RolUsuario", back_populates="usuarios")
 
-    @staticmethod
-    def obtener_por_usuario(usuario: str) -> Optional[Usuario]:
-        query = """
-            SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
-            FROM usuarios u
-            LEFT JOIN rol_usuario r ON u.id_rol = r.id
-            WHERE u.usuario = ?
-        """
-        resultado = db.fetch_one(query, (usuario,))
-        return Usuario(*resultado) if resultado else None
+    def __repr__(self):
+        return f"<Usuario(id={self.id_usuario}, usuario={self.usuario}, rol={self.id_rol})>"
 
-    @staticmethod
-    def obtener_por_id(id_usuario: int) -> Optional[Usuario]:
-        query = """
-            SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
-            FROM usuarios u
-            LEFT JOIN rol_usuario r ON u.id_rol = r.id
-            WHERE u.id_usuario = ?
-        """
-        resultado = db.fetch_one(query, (id_usuario,))
-        return Usuario(*resultado) if resultado else None
+class RolUsuario(Base):
+    __tablename__ = 'rol_usuario'
 
-    @staticmethod
-    def obtener_por_rol(usuario: str, id_rol: int) -> Optional[Usuario]:
-        query = """
-            SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
-            FROM usuarios u
-            LEFT JOIN rol_usuario r ON u.id_rol = r.id
-            WHERE u.usuario = ? AND u.id_rol = ?
-        """
-        resultado = db.fetch_one(query, (usuario, id_rol))
-        return Usuario(*resultado) if resultado else None
+    id = Column(Integer, primary_key=True)
+    rol = Column(String(50), unique=True, nullable=False)
+    
+    # Relación con usuarios
+    usuarios = relationship("Usuario", back_populates="rol")
 
-    @staticmethod
-    def listar_todos() -> list[Usuario]:
-        query = """
-            SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
-            FROM usuarios u
-            LEFT JOIN rol_usuario r ON u.id_rol = r.id
-        """
-        resultados = db.fetch_all(query)
-        return [Usuario(*resultado) for resultado in resultados]
+    def __repr__(self):
+        return f"<RolUsuario(id={self.id}, rol={self.rol})>"
 
-    @staticmethod
-    def crear(usuario: str, hash_contraseña: str, id_rol: int) -> int:
-        query = """
-            INSERT INTO usuarios (usuario, hash_contraseña, id_rol)
-            VALUES (?, ?, ?)
-        """
-        cursor = db.execute_query(query, (usuario, hash_contraseña, id_rol))
-        db.commit()
-        return cursor.lastrowid
+class BaseDatosUsuarios:
+    def __init__(self, session):
+        self.session = session
 
-    @staticmethod
-    def actualizar(id_usuario: int, usuario: str, hash_contraseña: Optional[str], id_rol: int) -> bool:
-        if hash_contraseña:
-            query = """
-                UPDATE usuarios 
-                SET usuario = ?, hash_contraseña = ?, id_rol = ? 
-                WHERE id_usuario = ?
-            """
-            params = (usuario, hash_contraseña, id_rol, id_usuario)
-        else:
-            query = """
-                UPDATE usuarios 
-                SET usuario = ?, id_rol = ? 
-                WHERE id_usuario = ?
-            """
-            params = (usuario, id_rol, id_usuario)
+    def obtener_por_usuario(self, usuario: str):
+        return self.session.query(Usuario).filter(Usuario.usuario == usuario).first()
+
+    def obtener_por_id(self, id_usuario: int):
+        return self.session.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
+
+    def obtener_por_rol(self, usuario: str, id_rol: int):
+        return self.session.query(Usuario).filter(
+            Usuario.usuario == usuario,
+            Usuario.id_rol == id_rol
+        ).first()
+
+    def listar_todos(self):
+        return self.session.query(Usuario).all()
+
+    def crear(self, usuario: str, hash_contraseña: str, id_rol: int):
+        nuevo_usuario = Usuario(
+            usuario=usuario,
+            hash_contraseña=hash_contraseña,
+            id_rol=id_rol
+        )
+        self.session.add(nuevo_usuario)
+        self.session.commit()
+        return nuevo_usuario.id_usuario
+
+    def actualizar(self, id_usuario: int, usuario: str, hash_contraseña: str = None, id_rol: int = None):
+        usuario_db = self.obtener_por_id(id_usuario)
+        if not usuario_db:
+            return False
         
-        db.execute_query(query, params)
-        db.commit()
+        if usuario:
+            usuario_db.usuario = usuario
+        if hash_contraseña:
+            usuario_db.hash_contraseña = hash_contraseña
+        if id_rol:
+            usuario_db.id_rol = id_rol
+        
+        self.session.commit()
         return True
 
-    @staticmethod
-    def eliminar(id_usuario: int) -> bool:
-        query = "DELETE FROM usuarios WHERE id_usuario = ?"
-        db.execute_query(query, (id_usuario,))
-        db.commit()
-        return True
+    def eliminar(self, id_usuario: int):
+        usuario = self.obtener_por_id(id_usuario)
+        if usuario:
+            self.session.delete(usuario)
+            self.session.commit()
+            return True
+        return False
 
-    @staticmethod
-    def obtener_por_usuario_y_contraseña(usuario: str, hash_contraseña: str) -> Optional[Usuario]:
-        query = """
-            SELECT u.id_usuario, u.usuario, u.hash_contraseña, u.id_rol, r.rol
-            FROM usuarios u
-            LEFT JOIN rol_usuario r ON u.id_rol = r.id
-            WHERE u.usuario = ? AND u.hash_contraseña = ?
-        """
-        resultado = db.fetch_one(query, (usuario, hash_contraseña))
-        return Usuario(*resultado) if resultado else None
+    def obtener_por_usuario_y_contraseña(self, usuario: str, hash_contraseña: str):
+        return self.session.query(Usuario).filter(
+            Usuario.usuario == usuario,
+            Usuario.hash_contraseña == hash_contraseña
+        ).first()
 

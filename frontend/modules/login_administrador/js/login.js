@@ -1,4 +1,4 @@
-import { API_CONFIG } from '../utils/config.js';
+import { API_CONFIG } from '../../../js/config.js';
 import { saveAuth } from '../utils/sessionManager.js';
 
 let password = '';
@@ -46,7 +46,7 @@ async function login() {
     }
 
     try {
-        const response = await fetch(API_CONFIG.AUTH.LOGIN_ADMIN, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGIN_ADMIN}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
