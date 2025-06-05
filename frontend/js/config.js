@@ -1,45 +1,52 @@
 const API_URL = 'http://localhost:5000';
-const IA_URL = 'http://localhost:8000';
-const REPORTES_URL = 'http://localhost:3000';
 
 export const API_CONFIG = {
     BASE_URL: API_URL,
-    IA_URL: IA_URL,
-    REPORTES_URL: REPORTES_URL,
-    AUTH: {
-        LOGIN_ADMIN: `${API_URL}/login/administrador`,
-        LOGIN_PERSONAL: `${API_URL}/login/personal`,
-        REGISTRO: `${API_URL}/registro`,
-        USUARIOS: `${API_URL}/usuarios`
-    },
-    PERTENENCIAS: {
-        CONSULTAR: `${API_URL}/pertenencia/consultar-pertenencias-estudiante-busqueda`,
-        REGISTRAR: `${API_URL}/pertenencia/registrar`,
-        ACTUALIZAR: `${API_URL}/pertenencia/actualizar`,
-        ELIMINAR: `${API_URL}/pertenencia/eliminar`
-    },
-    IA: {
-        DETECTAR_ROSTRO: `${IA_URL}/detectar-rostro`,
-        VERIFICAR_IDENTIDAD: `${IA_URL}/verificar-identidad`
-    },
-    REPORTES: {
-        GENERAR_REPORTE: `${REPORTES_URL}/generar-reporte`,
-        LISTAR_REPORTES: `${REPORTES_URL}/listar-reportes`
+    ENDPOINTS: {
+        // Auth endpoints
+        AUTH: {
+            LOGIN_ADMIN: '/api/auth/admin/login',
+            LOGIN_PERSONAL: '/api/auth/personal/login',
+            LOGIN_ESTUDIANTE: '/api/auth/estudiante/login',
+            REGISTRO: '/api/auth/registro',
+            USUARIOS: '/api/auth/usuarios'
+        },
+
+        // Pertenencias endpoints
+        PERTENENCIAS: {
+            CONSULTAR: '/api/pertenencias/consultar-pertenencias-estudiante-busqueda',
+            REGISTRAR: '/api/pertenencias/nueva-pertenencia',
+            REGISTRAR_INGRESO: '/api/pertenencias/registrar-ingreso-pertenencia',
+            REGISTRAR_SALIDA: '/api/pertenencias/registrar-salida-pertenencia',
+            ACTUALIZAR: '/api/pertenencias/actualizar',
+            ELIMINAR: '/api/pertenencias/eliminar',
+            HISTORIAL: '/api/pertenencias/historial'
+        },
+
+        // IA endpoints
+        IA: {
+            DETECTAR_ROSTRO: '/api/reconocimiento/detectar-rostro',
+            VERIFICAR_IDENTIDAD: '/api/reconocimiento/verificar-identidad',
+            DETECTAR_OBJETO: '/api/reconocimiento/detectar-objeto'
+        },
+
+        // Reportes endpoints
+        REPORTES: {
+            CONSULTAR: '/api/reportes/consultar-reporte',
+            DESCARGAR: '/api/reportes/descargar-excel'
+        }
     }
 };
-
-// Función para construir URLs completas
-function getApiUrl(endpoint) {
-    return API_CONFIG.BASE_URL + endpoint;
-}
 
 // Función para manejar las peticiones al backend
 async function fetchApi(endpoint, options = {}) {
     const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
 
     const defaultHeaders = {
         'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` })
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+        ...(role && { 'X-User-Role': role })
     };
 
     // Si hay FormData, no establecer Content-Type
@@ -56,7 +63,7 @@ async function fetchApi(endpoint, options = {}) {
     };
 
     try {
-        const response = await fetch(getApiUrl(endpoint), config);
+        const response = await fetch(API_URL + endpoint, config);
         const data = await response.json();
 
         if (!response.ok) {
@@ -83,4 +90,4 @@ function formatDate(date) {
 }
 
 // Exportar las funciones y configuración
-export { API_CONFIG, getApiUrl, fetchApi, formatDate }; 
+export { API_CONFIG, fetchApi, formatDate }; 

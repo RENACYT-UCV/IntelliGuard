@@ -17,12 +17,18 @@ def create_app():
     # Registrar blueprints
     from .routes.auth_routes import auth_bp
     from .routes.pertenencias_route import pertenencias_bp
+    from .routes.reconocimiento_routes import reconocimiento_bp
+    from .routes.estudiante_routes import estudiante_bp
+    from .routes.reportes_route import reportes_bp
     
     app.register_blueprint(auth_bp)
-    app.register_blueprint(pertenencias_bp)
+    app.register_blueprint(pertenencias_bp, url_prefix='/api/pertenencias')
+    app.register_blueprint(reconocimiento_bp)
+    app.register_blueprint(estudiante_bp)
+    app.register_blueprint(reportes_bp, url_prefix='/api/reportes')
     
     @app.route('/')
     def index():
-        return 'Hola mundo'
+        return 'API de IntelliGuard funcionando'
     
     return app

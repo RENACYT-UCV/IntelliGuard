@@ -1,81 +1,45 @@
-document.addEventListener('DOMContentLoaded', function() {
+import { API_CONFIG, fetchApi } from '../../../js/config.js';
+
+document.addEventListener('DOMContentLoaded', function () {
+    validarSesionAdmin();
     cargarUsuarios();
 });
 
-function getJwtToken() {
-    return getCookie('jwt');
-}
-
-function handleUnauthorized(response) {
-    if (response.status === 403 || response.status === 401 || response.status === 422) {
-       // logout();
+function validarSesionAdmin() {
+    const role = localStorage.getItem('role');
+    if (role !== 'admin') {
+        window.location.href = '../../login_administrador/pages/index.html';
+        return;
     }
 }
 
-function cargarUsuarios() {
-    const jwtToken = getJwtToken();
-    const apiUrl = API_URL + '/usuarios';
-
-    // if (!jwtToken) {
-    //     logout();
-    //     return;
-    // }
-
-    fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + jwtToken,
-            'Content-Type': 'application/json'
-        },
-    })
-    .then(response => {
-        console.log("Hola " + response.status);
-        //handleUnauthorized(response);
-        if (!response.ok) {
-            throw new Error('Error en la solicitud: ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Respuesta del servidor:', data);
-        mostrarUsuarios(data.usuarios || []);
-    })
-    .catch(error => {
+async function cargarUsuarios() {
+    try {
+        const response = await fetchApi(API_CONFIG.ENDPOINTS.AUTH.USUARIOS, {
+            method: 'GET'
+        });
+        mostrarUsuarios(response.usuarios || []);
+    } catch (error) {
         console.error('Error al cargar los usuarios:', error);
-    });
+        mostrarMensajeError('Error al cargar los usuarios');
+    }
 }
 
-function eliminarUsuario(idUsuario) {
-    const jwtToken = getJwtToken();
-    const apiUrl = API_URL + '/usuarios/' + idUsuario;
+async function eliminarUsuario(idUsuario) {
+    if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+        return;
+    }
 
-    // if (!jwtToken) {
-    //     console.error('No se encontró el token JWT.');
-    //     logout();
-    //     return;
-    // }
-
-    fetch(apiUrl, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': 'Bearer ' + jwtToken,
-            'Content-Type': 'application/json'
-        },
-    })
-    .then(response => {
-        handleUnauthorized(response);
-        if (!response.ok) {
-            throw new Error('Error en la solicitud: ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Respuesta del servidor:', data);
+    try {
+        await fetchApi(`${API_CONFIG.ENDPOINTS.AUTH.USUARIOS}/${idUsuario}`, {
+            method: 'DELETE'
+        });
+        mostrarMensajeExito('Usuario eliminado exitosamente');
         cargarUsuarios();
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error al eliminar el usuario:', error);
-    });
+        mostrarMensajeError('Error al eliminar el usuario');
+    }
 }
 
 function mostrarUsuarios(usuarios) {
@@ -89,20 +53,38 @@ function mostrarUsuarios(usuarios) {
             <td>${usuario.nombre}</td>
             <td>${usuario.rol}</td>
             <td>
-                <a class="btn btn-primary btn-editar" href="editarUsuario.html?id=${usuario.id}&nombre=${usuario.nombre}&rol=${usuario.rol}"><i class="fa-solid fa-pen-to-square"></i> Editar </a>
-                <button id="btnEliminar" class="btn btn-danger btn-eliminar" data-id="${usuario.id}"> <i class="fa-solid fa-trash"></i> Eliminar</button>
+                <a class="btn btn-primary btn-editar" href="editarUsuario.html?id=${usuario.id}&nombre=${encodeURIComponent(usuario.nombre)}&rol=${encodeURIComponent(usuario.rol)}">
+                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                </a>
+                <button class="btn btn-danger btn-eliminar" data-id="${usuario.id}">
+                    <i class="fa-solid fa-trash"></i> Eliminar
+                </button>
             </td>
         `;
         tbody.appendChild(row);
-    });
 
-    // Añadir evento a los botones de eliminar
-    document.querySelectorAll('.btn-eliminar').forEach(button => {
-        button.addEventListener('click', function() {
-            const userId = this.getAttribute('data-id');
-            if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-                eliminarUsuario(userId);
-            }
-        });
+        // Agregar evento al botón de eliminar
+        const btnEliminar = row.querySelector('.btn-eliminar');
+        btnEliminar.addEventListener('click', () => eliminarUsuario(usuario.id));
     });
 }
+
+function mostrarMensajeError(mensaje) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.querySelector('.container').prepend(alertDiv);
+}
+
+function mostrarMensajeExito(mensaje) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.querySelector('.container').prepend(alertDiv);
+} 

@@ -1,0 +1,55 @@
+.facial-recognition {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.facial-recognition video {
+    width: 100%;
+    max-width: 640px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.facial-recognition .controls {
+    margin: 20px 0;
+}
+
+.facial-recognition .recording-indicator {
+    display: inline-flex;
+    align-items: center;
+    margin: 10px 0;
+    padding: 5px 10px;
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 15px;
+}
+
+.facial-recognition .recording-indicator .indicator {
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
+    margin-right: 10px;
+    animation: blink 1s infinite;
+}
+
+.facial-recognition .recording-indicator .time {
+    color: #666;
+    font-size: 14px;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

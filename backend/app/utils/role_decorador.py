@@ -3,20 +3,18 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt
 from flask import jsonify
 from ..models.usuario import BaseDatosUsuarios
 
-from functools import wraps
-from flask import jsonify
-from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
-
-def role_required(required_role):
+def role_required(required_roles):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
-            current_user_id = get_jwt_identity()
-            base_datos_usuarios = BaseDatosUsuarios()
-            user = base_datos_usuarios.consultar_usuario_por_id(current_user_id)
+            verify_jwt_in_request()
+            claims = get_jwt()
             
-            if not user or user.rol != required_role:
-                return jsonify({'error': 'No tienes permisos para realizar esta acción'}), 403
+            # Si required_roles es una cadena, convertirla en lista
+            roles_list = [required_roles] if isinstance(required_roles, str) else required_roles
+            
+            if claims.get('rol') not in roles_list:
+                return jsonify({'error': 'No tienes permisos para realizar esta acción', 'status': 'error'}), 403
             
             return fn(*args, **kwargs)
         return wrapper

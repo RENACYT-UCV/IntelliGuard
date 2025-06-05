@@ -1,25 +1,6 @@
-from flask import Flask
-from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from routes.auth_routes import auth_bp
+from app import create_app
 
-
-from models.usuario import BaseDatosUsuarios
-
-
-
-app = Flask(__name__)
-CORS(app)
-app.config['JWT_SECRET_KEY'] = 'clave_12323'
-jwt = JWTManager(app)
-
-base_datos_usuarios = BaseDatosUsuarios("basededatos.db")
-@app.route('/')
-def index():
-    return 'Hola mundo'
-
-app.register_blueprint(auth_bp)
-
+app = create_app()
 
 if __name__ == '__main__':
     app.run(debug=True)

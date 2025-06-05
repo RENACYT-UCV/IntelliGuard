@@ -1,26 +1,33 @@
 import bcrypt
 from app.models.usuario import BaseDatosUsuarios
+import sqlite3
+import os
 
 def init_db():
     print("Inicializando base de datos...")
+    
+    # Forzar la creación de un nuevo usuario administrador
     db = BaseDatosUsuarios()
-    
-    # Crear usuario administrador si no existe
     admin_user = "admin"
-    admin_password = "123456"
+    admin_password = "123123"
     
-    # Verificar si el usuario admin ya existe
-    if not db.consultar_usuario_administrador(admin_user):
+    try:
         # Hash de la contraseña
         hashed_password = bcrypt.hashpw(admin_password.encode('utf-8'), bcrypt.gensalt())
         
-        # Agregar usuario administrador (id_rol = 2 para Administrador)
+        # Eliminar el usuario admin si existe
+        cursor = db.conexion.cursor()
+        cursor.execute("DELETE FROM usuarios WHERE usuario = ?", (admin_user,))
+        
+        # Agregar el nuevo usuario administrador (id_rol = 2 para Administrador)
         db.agregar_usuario(admin_user, hashed_password, 2)
-        print(f"Usuario administrador creado exitosamente:")
+        db.conexion.commit()
+        
+        print(f"Usuario administrador creado/actualizado exitosamente:")
         print(f"Usuario: {admin_user}")
         print(f"Contraseña: {admin_password}")
-    else:
-        print("El usuario administrador ya existe")
+    except Exception as e:
+        print(f"Error al crear usuario administrador: {str(e)}")
     
     print("Inicialización completada")
 

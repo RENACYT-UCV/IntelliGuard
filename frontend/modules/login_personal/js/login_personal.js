@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('token', response.access_token);
 
             // Redirigir según el rol del personal
-            window.location.href = '/modules/registro_pertencias/index.html';
+            window.location.href = '../registro_pertencias/pages/index.html';
         } catch (error) {
             // Mostrar mensaje de error
             const errorDiv = document.getElementById('error-message');
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminLoginBtn = document.getElementById('adminLoginBtn');
     if (adminLoginBtn) {
         adminLoginBtn.addEventListener('click', () => {
-            window.location.href = '/modules/login_administrador/index.html';
+            window.location.href = '../login_administrador/pages/index.html';
         });
     }
 }); 

@@ -79,25 +79,39 @@ class ReconocimientoFacial:
             print(f"Error en reconocimiento facial: {str(e)}")
             return None, 0
             
-    def capturar_rostro(self, codigo_estudiante):
+    def capturar_rostro(self, codigo_estudiante, video_path=None):
         """
-        Captura rostros desde la cámara y los guarda
+        Captura rostros desde un video o la cámara web
         
         Args:
             codigo_estudiante: Código del estudiante para nombrar las imágenes
+            video_path: Ruta al archivo de video (opcional, si no se proporciona usa la cámara)
         """
         try:
             # Crear directorio si no existe
             os.makedirs(DATASET_FACIAL, exist_ok=True)
             
-            # Iniciar cámara
-            cap = cv2.VideoCapture(0)
+            # Iniciar captura de video
+            if video_path:
+                cap = cv2.VideoCapture(video_path)
+            else:
+                cap = cv2.VideoCapture(0)
+                
+            if not cap.isOpened():
+                raise Exception("No se pudo abrir el video o la cámara")
+                
             contador = 0
+            frames_procesados = 0
+            max_frames = 30  # Procesar un frame cada 30 frames para videos largos
             
             while contador < MAX_FOTOS:
                 ret, frame = cap.read()
                 if not ret:
                     break
+                    
+                frames_procesados += 1
+                if frames_procesados % max_frames != 0:
+                    continue
                     
                 # Convertir a escala de grises
                 gris = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -110,40 +124,27 @@ class ReconocimientoFacial:
                     minSize=(30, 30)
                 )
                 
-                # Dibujar rectángulo y guardar rostro
+                # Guardar rostros detectados
                 for (x, y, w, h) in rostros:
-                    cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-                    
                     # Guardar rostro
                     rostro = gris[y:y+h, x:x+w]
                     ruta = os.path.join(DATASET_FACIAL, f"{codigo_estudiante}_{contador}.jpg")
                     cv2.imwrite(ruta, rostro)
                     contador += 1
-                    
-                # Mostrar contador
-                cv2.putText(
-                    frame,
-                    f"Fotos: {contador}/{MAX_FOTOS}",
-                    (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (0, 255, 0),
-                    2
-                )
-                
-                cv2.imshow('Captura de Rostro', frame)
-                
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-                    
+                    if contador >= MAX_FOTOS:
+                        break
+                        
             cap.release()
-            cv2.destroyAllWindows()
             
+            if contador == 0:
+                raise Exception("No se detectaron rostros en el video")
+                
             # Entrenar modelo con nuevas imágenes
             self.entrenar_modelo()
             
         except Exception as e:
             print(f"Error al capturar rostro: {str(e)}")
+            raise e
             
     def entrenar_modelo(self):
         """Entrena el modelo con las imágenes disponibles"""

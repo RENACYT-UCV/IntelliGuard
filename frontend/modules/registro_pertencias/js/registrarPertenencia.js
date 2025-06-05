@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
+import { API_CONFIG, fetchApi } from '../../../js/config.js';
+
+document.addEventListener('DOMContentLoaded', function () {
     //validTokenSession();
     const identificarObjetoBtn = document.getElementById('identificarObjetoBtn');
     const registroInfo = document.querySelector('.registro-info');
@@ -21,15 +23,15 @@ document.addEventListener('DOMContentLoaded', function() {
         window.open(url, '_blank');
     }
 
-function validarDatos() {
-  // Intenta obtener los datos guardados en localStorage
-  const data = JSON.parse(localStorage.getItem('data')) || {};
+    function validarDatos() {
+        // Intenta obtener los datos guardados en localStorage
+        const data = JSON.parse(localStorage.getItem('data')) || {};
 
-  // Si no hay estudiante ni objeto, redirige a la página de identificación
-  if (!data.estudiante && !data.objeto) {
-    window.open('identificar-estudiante.html', '_blank');
-  }
-}
+        // Si no hay estudiante ni objeto, redirige a la página de identificación
+        if (!data.estudiante && !data.objeto) {
+            window.open('identificar-estudiante.html', '_blank');
+        }
+    }
 
     function manejoDeVentanas(event) {
         const { type, payload } = event.data;
@@ -51,57 +53,35 @@ function validarDatos() {
         formData.append('idEstudiante', data.estudiante.id);
         formData.append('idObjeto', data.objeto.idObjeto);
         console.log(data)
-        if(data.objeto.tipoRegistro == "coincidencias"){
+        if (data.objeto.tipoRegistro == "coincidencias") {
             console.log(data.objeto)
             formData.append('codigoPertenencia', data.objeto.codigoPertenencia);
-            fetchRegistrarIngresoPertenecia(formData)
+            fetchApi(API_CONFIG.ENDPOINTS.PERTENENCIAS.REGISTRAR_INGRESO, {
+                method: 'POST',
+                body: formData
+            })
                 .then(data => mostrarIconoResultado(true, data.message))
                 .catch(error => handleErrorResponse(error));
 
-        }else{
-            fetchRegistrarPertenencia(formData)
+        } else {
+            fetchApi(API_CONFIG.ENDPOINTS.PERTENENCIAS.REGISTRAR, {
+                method: 'POST',
+                body: formData
+            })
                 .then(data => mostrarIconoResultado(true, "Se registro la Entrada de pertenencia exitosamente"))
                 .catch(error => handleErrorResponse(error));
 
         }
     }
 
-    function fetchRegistrarIngresoPertenecia(formData) {
-        return fetch(API_URL + '/pertenencia/registrar-ingreso-pertenencia', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + getCookie('jwt'),
-            },
-            body: formData
-        })
-        .then(handleResponse)
-        .then(response => response.json());
-    }
-
-    function fetchRegistrarPertenencia(formData) {
-        return fetch(API_URL + '/pertenencia/nueva-pertenencia', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + getCookie('jwt'),
-            },
-            body: formData
-        })
-        .then(handleResponse)
-        .then(response => response.json());
-    }
-
-    function handleResponse(response) {
-        //handleUnauthorized(response)
-        if (!response.ok) {
-            throw response;
-        }
-        return response;
-    }
-
     function handleErrorResponse(error) {
-        error.json().then(err => {
-            mostrarIconoResultado(false, err.message || 'Error al Registrar Pertenencia');
-        });
+        if (error.json) {
+            error.json().then(err => {
+                mostrarIconoResultado(false, err.message || 'Error al Registrar Pertenencia');
+            });
+        } else {
+            mostrarIconoResultado(false, 'Error al Registrar Pertenencia');
+        }
     }
 
     function mostrarIconoResultado(exito, mensaje) {
@@ -125,7 +105,7 @@ function validarDatos() {
                     <div class="info-value">${data.estudiante.planEstudiante}</div></div>`;
         }
         if (data.objeto) {
-            if(data.objeto.ultimoEstado){
+            if (data.objeto.ultimoEstado) {
                 content += `
                     <div class="info-row">
                         <div class="info-label">Codigo Pertenencia</div>
@@ -140,7 +120,7 @@ function validarDatos() {
                         <div class="info-value"><img src="${data.objeto.imgUri}" alt="${data.objeto.objeto}" class="objeto-img"></div>
                     </div>`;
 
-            }else{
+            } else {
                 content += `
                     <div class="info-row">
                         <div class="info-label">Nueva Pertenencia Registrada!!!</div><br>

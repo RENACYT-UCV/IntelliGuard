@@ -1,8 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
+import { API_CONFIG, fetchApi } from '../../../js/config.js';
+
+document.addEventListener('DOMContentLoaded', function () {
   //validTokenSession();
 
   // Iniciar variables
-  
+
   const searchEstudianteBtn = document.getElementById('searchEstudianteBtn');
   const retryBtn = document.getElementById('retryBtn');
   const canvas = document.getElementById('canvas');
@@ -14,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const porcentajeProgreso = document.getElementById('porcentaje-progreso');
   const mensajeProgreso = document.getElementById('mensaje-progreso');
   const anchoBarraMax = barraProgreso.parentNode.offsetWidth;
-  
+
   let datosEstudiante = null;
   let isFrontCamera = true;
   let coincidenciaExistente = null;
@@ -52,8 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return canvas.toDataURL("image/jpeg");
   }
 
-
-
   // Enviar imagen al API
   function iniciarReconocimientoFacial() {
     videoElement.style.display = 'block';
@@ -65,30 +65,29 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   const maxIntentos = 40;
-  function enviarFoto(coincidencias=[], intentos=0) {
+  function enviarFoto(coincidencias = [], intentos = 0) {
     if (intentos < maxIntentos) {
       const imagenURI = capturarImagen(videoElement, canvas);
       const imagen = dataURItoFile(imagenURI, 'photo.jpg');
       const formData = new FormData();
       formData.append('file', imagen);
       mostrarSpinner(true);
-      fetch(API_URL + '/estudiante/reconocimiento-facial', {
+
+      fetchApi(API_CONFIG.ENDPOINTS.IA.DETECTAR_ROSTRO, {
         method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + getCookie('jwt') },
         body: formData
       })
-      .then(response => manejarRespuesta(response, coincidencias))
-      .then(data => procesarDatos(data, coincidencias))
-      .catch(handleFetchError)
-      .finally(() => {
-        intentos++;
-        if (!coincidenciaCompleta(coincidencias)) {
-          enviarFoto(coincidencias, intentos);
-        } else {
-          canvas.style.display = 'block';
-          videoElement.style.display = 'none';
-        }
-      });
+        .then(data => procesarDatos(data, coincidencias))
+        .catch(handleFetchError)
+        .finally(() => {
+          intentos++;
+          if (!coincidenciaCompleta(coincidencias)) {
+            enviarFoto(coincidencias, intentos);
+          } else {
+            canvas.style.display = 'block';
+            videoElement.style.display = 'none';
+          }
+        });
     } else {
       mostrarMensajeEstudianteNoEncontrado();
     }

@@ -4,79 +4,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IntelliGuard - Sistema de Seguridad</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>IntelliGuard - Sistema de Control de Pertenencias</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #141e30, #243b55);
-      height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
     }
 
     .container {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
       text-align: center;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    h1 {
-      color: #fff;
-      margin-bottom: 30px;
-    }
-
-    .button-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .login-button {
-      background: none;
-      border: 2px solid #03e9f4;
-      padding: 15px 30px;
-      color: #03e9f4;
-      font-size: 16px;
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
       text-decoration: none;
-      text-transform: uppercase;
       cursor: pointer;
-      border-radius: 5px;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
     }
 
-    .login-button:hover {
-      background: #03e9f4;
-      color: #fff;
-      box-shadow: 0 0 5px #03e9f4,
-        0 0 25px #03e9f4,
-        0 0 50px #03e9f4,
-        0 0 100px #03e9f4;
+    .btn:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>IntelliGuard</h1>
-    <div class="button-container">
-      <a href="modules/login_personal/pages/index.html" class="login-button">
-        <i class="fa-solid fa-user"></i>
-        Login Usuario
-      </a>
-      <a href="modules/login_administrador/pages/index.html" class="login-button">
-        <i class="fa-solid fa-user-shield"></i>
-        Login Administrador
-      </a>
+    <h1>Bienvenido a IntelliGuard</h1>
+    <h2>Sistema de Control de Pertenencias</h2>
+    <div>
+      <a href="modules/login_personal/pages/index.html" class="btn">Acceso Personal</a>
+      <a href="modules/login_administrador/pages/index.html" class="btn">Acceso Administrador</a>
     </div>
   </div>
 </body>

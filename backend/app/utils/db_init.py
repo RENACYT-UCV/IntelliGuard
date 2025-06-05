@@ -33,6 +33,17 @@ def init_db():
     )
     ''')
 
+    # Crear tabla de estudiantes
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS estudiantes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        codigo TEXT NOT NULL UNIQUE,
+        nombres TEXT NOT NULL,
+        carrera TEXT NOT NULL,
+        plan TEXT NOT NULL
+    )
+    ''')
+
     # Crear usuario administrador por defecto si no existe
     cursor.execute("SELECT COUNT(*) FROM usuarios WHERE id_rol = 2")
     if cursor.fetchone()[0] == 0:
