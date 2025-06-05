@@ -2,8 +2,15 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 from ..models.pertenencia import Pertenencia, PertenenciaDetallada, PertenenciaModel
 from ..models.estudiante import EstudianteModel
+from ..database.db_manager import db
+import logging
+
+logger = logging.getLogger(__name__)
 
 class PertenenciaService:
+    def __init__(self):
+        self.db = db
+
     @staticmethod
     def registrar_pertenencia(descripcion: str, id_estudiante: int) -> Dict:
         """
@@ -40,7 +47,7 @@ class PertenenciaService:
     def buscar_pertenencias(
         datos_estudiante: str = "",
         estado: str = "",
-        descripcion: str = ""
+        codigo: str = ""
     ) -> List[PertenenciaDetallada]:
         """
         Busca pertenencias con filtros.
@@ -50,10 +57,14 @@ class PertenenciaService:
         if estado and estado not in PertenenciaModel.ESTADOS_VALIDOS:
             return []
 
+        # Si se proporciona un código, agregarlo a datos_estudiante
+        datos_busqueda = datos_estudiante
+        if codigo:
+            datos_busqueda = codigo if not datos_estudiante else f"{datos_estudiante} {codigo}"
+
         return PertenenciaModel.buscar(
-            datos_estudiante=datos_estudiante,
-            estado=estado,
-            descripcion=descripcion
+            datos_estudiante=datos_busqueda,
+            estado=estado
         )
 
     @staticmethod
@@ -128,4 +139,26 @@ class PertenenciaService:
             
             return {'exito': True, 'estadisticas': estadisticas}
         except Exception as e:
-            return {'exito': False, 'errores': [str(e)]} 
+            return {'exito': False, 'errores': [str(e)]}
+
+    def get_all_pertenencias(self):
+        """Obtiene todas las pertenencias con información del estudiante"""
+        try:
+            query = """
+                SELECT 
+                    p.id,
+                    p.id_estudiante,
+                    p.descripcion,
+                    p.fecha_registro,
+                    p.estado,
+                    e.nombres as estudiante_nombre,
+                    e.carrera as estudiante_carrera
+                FROM pertenencias p
+                LEFT JOIN estudiantes e ON p.id_estudiante = e.id
+                ORDER BY p.fecha_registro DESC
+            """
+            pertenencias = self.db.fetch_all(query)
+            return [dict(row) for row in pertenencias]
+        except Exception as e:
+            logger.error(f"Error al obtener pertenencias: {str(e)}")
+            raise 

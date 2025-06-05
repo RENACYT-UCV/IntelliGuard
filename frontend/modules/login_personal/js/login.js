@@ -1,5 +1,4 @@
-import { API_CONFIG } from '../../../js/config.js';
-import { saveAuth } from '../utils/sessionManager.js';
+import config from '../../../shared/config/config.js';
 
 let password = '';
 const MAX_LENGTH = 6;
@@ -7,7 +6,9 @@ const MAX_LENGTH = 6;
 function updateDots() {
     for (let i = 1; i <= MAX_LENGTH; i++) {
         const dot = document.getElementById(`dot-${i}`);
-        dot.classList.toggle('filled', i <= password.length);
+        if (dot) {
+            dot.classList.toggle('filled', i <= password.length);
+        }
     }
 }
 
@@ -37,16 +38,19 @@ function limpiarDigitos() {
     updateDots();
 }
 
-async function login() {
+export async function login() {
     const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-    if (!username || password.length !== MAX_LENGTH) {
-        document.getElementById('error-message').style.display = 'block';
+    if (!username || !password) {
+        const errorMsg = document.getElementById('error-message');
+        errorMsg.textContent = 'Por favor ingrese usuario y contraseña';
+        errorMsg.style.display = 'block';
         return;
     }
 
     try {
-        const response = await fetch(API_CONFIG.AUTH.LOGIN_PERSONAL, {
+        const response = await fetch(`${config.API_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -57,16 +61,32 @@ async function login() {
             })
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Credenciales inválidas');
+            throw new Error(data.error || 'Error en el inicio de sesión');
         }
 
-        const data = await response.json();
-        saveAuth(data.access_token, username);
+        // Guardar el token
+        localStorage.setItem('token', data.access_token);
+
+        // Guardar el rol como 'personal' por defecto
+        localStorage.setItem('role', 'personal');
+
+        if (data.user) {
+            localStorage.setItem('user', JSON.stringify({
+                ...data.user,
+                rol: 'personal'
+            }));
+        }
+
+        // Redirigir al menú principal
         window.location.href = '../pages/menu.html';
     } catch (error) {
-        document.getElementById('error-message').style.display = 'block';
-        limpiarDigitos();
+        console.error('Error en login:', error);
+        const errorMsg = document.getElementById('error-message');
+        errorMsg.textContent = error.message || 'Usuario o contraseña incorrectos';
+        errorMsg.style.display = 'block';
     }
 }
 
@@ -74,5 +94,4 @@ async function login() {
 window.agregarDigito = agregarDigito;
 window.eliminarDigito = eliminarDigito;
 window.limpiarDigitos = limpiarDigitos;
-window.login = login;
 

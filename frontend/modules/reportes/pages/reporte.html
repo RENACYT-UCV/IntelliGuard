@@ -1,51 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes de Registro de Pertenencias</title>
-    <link rel="stylesheet" href="../css/reporte.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../css/reporte.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
-    
-
 </head>
+
 <body>
     <header class="header">
-        <span class="username">GENERAR REPORTE</span>
+        <div class="header-left">
+            <button class="btn btn-secondary" onclick="goBack()">
+                <i class="fas fa-arrow-left me-2"></i> Regresar
+            </button>
+            <span class="username">GENERAR REPORTE</span>
+        </div>
+        <button class="btn btn-danger" onclick="logout()">
+            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+        </button>
     </header>
-    
-   <div class="btn-toolbar">
-    <div class="centrtros">
-        <button id="downloadPagePdf" class="btn btn-primary">
-            <i class="fas fa-file-pdf me-2"></i> Descargar PDF
-        </button>
-        <button class="btn btn-success" onclick="fetchExcelFile()">
-            <i class="fas fa-file-excel me-2"></i> Descargar Excel
-        </button>
+
+    <div class="btn-toolbar">
+        <div class="centrtros">
+            <button id="downloadPagePdf" class="btn btn-primary">
+                <i class="fas fa-file-pdf me-2"></i> Descargar PDF
+            </button>
+            <button class="btn btn-success" onclick="fetchExcelFile()">
+                <i class="fas fa-file-excel me-2"></i> Descargar Excel
+            </button>
+        </div>
     </div>
-</div>
 
     <main id="main">
-
-<div class="charts-row">
-    <section class="chart-section">
-        <h2>Pertenencias Actuales por Tipo de Objeto</h2>
-        <div class="chart-container">
-            <canvas id="objectTypeChart"></canvas>
+        <div class="charts-row">
+            <section class="chart-section">
+                <h2>Pertenencias Actuales por Tipo de Objeto</h2>
+                <div class="chart-container">
+                    <canvas id="objectTypeChart"></canvas>
+                </div>
+            </section>
+            <section class="chart-section">
+                <h2>Estado Actual de las Pertenencias (Ingresada, Salida, Extraviada)</h2>
+                <div class="chart-container">
+                    <canvas id="statusPieChart"></canvas>
+                </div>
+            </section>
         </div>
-    </section>
-    <section class="chart-section">
-        <h2>Estado Actual de las Pertenencias (Ingresada, Salida, Extraviada)</h2>
-        <div class="chart-container">
-            <canvas id="statusPieChart"></canvas>
-        </div>
-    </section>
-</div>
 
         <section>
             <h2>Resumen de Registros de Pertenencia Por Fecha</h2>
@@ -95,12 +104,12 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-    <div class="form-group">
-        <label for="consultarButton" class="form-label" style="visibility: hidden;">Consultar</label>
-        <button id="consultarButton" class="btn btn-primary w-100">CONSULTAR</button>
-    </div>
-</div>
-
+                        <div class="form-group">
+                            <label for="consultarButton" class="form-label"
+                                style="visibility: hidden;">Consultar</label>
+                            <button id="consultarButton" class="btn btn-primary w-100">CONSULTAR</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -127,11 +136,13 @@
                 </table>
             </div>
         </section>
-
     </main>
-    <script src="../utils/sessionManager.js"></script>
-    <script src="../utils/config.js"></script>
-    <script src="../utils/util.js"></script>
-    <script src="/frontend/modules/reportes/js/reporte.js"></script>
+
+    <!-- Scripts -->
+    <script src="../../../shared/config/config.js"></script>
+    <script src="../../../shared/utils/sessionManager.js"></script>
+    <script src="../../../shared/utils/util.js"></script>
+    <script type="module" src="../js/reporte.js"></script>
 </body>
+
 </html>

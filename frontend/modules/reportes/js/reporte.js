@@ -1,230 +1,297 @@
-document.addEventListener('DOMContentLoaded', function() {
-    let objectTypeChart;
-    let statusPieChart;
-    async function loadChartsAndTables(filters = {}, loadAll = true) {
-        const data = await fetchData('POST', filters);
-        
-        if (data && data.pertenencias) {
-            if (loadAll) {
-                if (objectTypeChart) {
-                    objectTypeChart.destroy();
-                }
-                if (statusPieChart) {
-                    statusPieChart.destroy();
-                }
-                loadObjectTypeChart(data.pertenencias);
-                loadStatusPieChart(data.pertenencias);
-                loadSummaryTable(data.registros);
-            }
-            loadAllRecordsTable(data.registros);
-        }
-    }
+import config from '../../../shared/config/config.js';
+import { SessionManager } from '../../../shared/utils/sessionManager.js';
 
-    function crearDataFormulario(data) {
-        const formData = new FormData();
-        for (const key in data) {
-            formData.append(key, data[key]);
-        }
-        return formData;
-    }
-
-    async function fetchData(method = 'POST', filters = {}) {
-        const formData = crearDataFormulario(filters);
-        const token = getCookie('jwt');
-        const response = await fetch(`${API_URL}/pertenencia/consulta-reporte`, {
-            method: method,
-            headers: {
-                'Authorization': `Bearer ${token}`
+document.addEventListener('DOMContentLoaded', async () => {
+    // Configuración común para las gráficas
+    const chartConfig = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    font: {
+                        size: 12,
+                        family: "'Segoe UI', sans-serif"
+                    }
+                }
             },
-            body: formData
-        });
-        //handleUnauthorized(response);
-        return await response.json();
-    }
+            title: {
+                display: false
+            }
+        }
+    };
 
-    function loadObjectTypeChart(pertenencias) {
-        const objectTypeData = pertenencias.reduce((acc, item) => {
-            acc[item.nombre_objeto] = (acc[item.nombre_objeto] || 0) + 1;
-            return acc;
-        }, {});
-        
-        const labels = Object.keys(objectTypeData);
-        const values = Object.values(objectTypeData);
-        const backgroundColors = labels.map((label, index) => `rgba(${index * 50 % 255}, ${index * 100 % 255}, ${index * 150 % 255}, 0.2)`);
-        const borderColors = labels.map((label, index) => `rgba(${index * 50 % 255}, ${index * 100 % 255}, ${index * 150 % 255}, 1)`);
-    
-        const ctx = document.getElementById('objectTypeChart').getContext('2d');
-        objectTypeChart = new Chart(ctx, {
+    // Colores para las gráficas
+    const colors = {
+        blue: '#1a73e8',
+        green: '#34a853',
+        yellow: '#fbbc04',
+        red: '#ea4335',
+        purple: '#673ab7',
+        teal: '#009688'
+    };
+
+    // Configurar gráfica de tipos de objetos
+    const objectTypeChart = new Chart(
+        document.getElementById('objectTypeChart').getContext('2d'),
+        {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: [],
                 datasets: [{
-                    label: 'Número de objetos registrados de este Tipo',
-                    data: values,
-                    backgroundColor: backgroundColors,
-                    borderColor: borderColors,
-                    borderWidth: 1
+                    data: [],
+                    backgroundColor: Object.values(colors),
+                    borderColor: 'white',
+                    borderWidth: 2
                 }]
             },
             options: {
+                ...chartConfig,
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             }
-        });
-    }
-    
-    function loadStatusPieChart(pertenencias) {
-        let statusData = {
-            Ingresado: 0,
-            Salida: 0,
-            Extraviado: 0
-        };
-        pertenencias.forEach(item => {
-            if (item.id_estado === 1) {
-                statusData.Ingresado += 1;
-            } else if (item.id_estado === 2) {
-                statusData.Salida += 1;
-            } else if (item.id_estado === 3) {
-                statusData.Extraviado += 1;
-            }
-        });
-        const labels = Object.keys(statusData);
-        const values = Object.values(statusData);
-        const newLabels = labels.map((label, index) => `[ Estado:${label},n:${values[index]} ]`);
-        const ctx = document.getElementById('statusPieChart').getContext('2d');
-        statusPieChart = new Chart(ctx, {
-            type: 'pie',
+        }
+    );
+
+    // Configurar gráfica de estado de pertenencias
+    const statusPieChart = new Chart(
+        document.getElementById('statusPieChart').getContext('2d'),
+        {
+            type: 'doughnut',
             data: {
-                labels: newLabels,
+                labels: ['Ingresada', 'Salida', 'Extraviada'],
                 datasets: [{
-                    label: 'Cantidad',
-                    data: values,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)'
-                    ],
-                    borderWidth: 1
+                    data: [0, 0, 0],
+                    backgroundColor: [colors.blue, colors.green, colors.yellow],
+                    borderColor: 'white',
+                    borderWidth: 2
                 }]
             },
             options: {
-                responsive: true
+                ...chartConfig,
+                cutout: '60%'
             }
+        }
+    );
+
+    async function fetchData(method = 'GET', filters = {}) {
+        const token = localStorage.getItem('token');
+        let url = `${config.API_URL}/api/pertenencia/consulta-reporte`;
+
+        if (method === 'GET') {
+            const params = new URLSearchParams(filters);
+            url += `?${params.toString()}`;
+        }
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'X-User-Role': 'personal'
+            },
+            body: method === 'POST' ? JSON.stringify(filters) : undefined
         });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                window.location.href = '../../login_personal/pages/index.html';
+                return;
+            }
+            throw new Error('Error al obtener los datos');
+        }
+
+        return await response.json();
     }
 
-    function loadSummaryTable(registros) {
-        const tbody = document.querySelector('table tbody');
-        tbody.innerHTML = ''; 
-        const groupedData = registros.reduce((acc, item) => {
-            const date = item.hora_entrada.split('_')[0];
-            if (!acc[date]) {
-                acc[date] = { entradas: 0, salidas: 0, extraviada: 0, total: 0 };
-            }
-            if (item.estado === 'Ingresada') {
-                acc[date].entradas += 1;
-            } else if (item.estado === 'Salida') {
-                acc[date].entradas += 1;
-                acc[date].salidas += 1;
-            } else if (item.estado === 'Extraviada') {
-                acc[date].entradas += 1;
-                acc[date].extraviada += 1;
-            }
-            acc[date].total += 1;
-            return acc;
-        }, {});
+    // Función para actualizar los datos
+    async function updateCharts() {
+        try {
+            const data = await fetchData();
 
-        Object.keys(groupedData).forEach(date => {
-            const record = groupedData[date];
+            if (data.status === 'success' && data.pertenencias) {
+                // Procesar datos para la gráfica de tipos
+                const typeCount = {};
+                data.pertenencias.forEach(item => {
+                    const type = item.tipo || 'Sin clasificar';
+                    typeCount[type] = (typeCount[type] || 0) + 1;
+                });
+
+                objectTypeChart.data.labels = Object.keys(typeCount);
+                objectTypeChart.data.datasets[0].data = Object.values(typeCount);
+                objectTypeChart.update();
+
+                // Procesar datos para la gráfica de estado
+                const statusCount = {
+                    'Ingresada': 0,
+                    'Salida': 0,
+                    'Extraviada': 0
+                };
+
+                data.pertenencias.forEach(item => {
+                    if (statusCount.hasOwnProperty(item.estado)) {
+                        statusCount[item.estado]++;
+                    }
+                });
+
+                statusPieChart.data.datasets[0].data = [
+                    statusCount['Ingresada'],
+                    statusCount['Salida'],
+                    statusCount['Extraviada']
+                ];
+                statusPieChart.update();
+
+                // Actualizar tabla de resumen
+                updateSummaryTable(data.pertenencias);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Función para actualizar la tabla de resumen
+    function updateSummaryTable(pertenencias) {
+        const tbody = document.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        // Agrupar por fecha
+        const groupedByDate = {};
+        pertenencias.forEach(item => {
+            const date = new Date(item.fecha_registro).toLocaleDateString();
+            if (!groupedByDate[date]) {
+                groupedByDate[date] = {
+                    ingresados: 0,
+                    salidos: 0,
+                    extraviados: 0
+                };
+            }
+
+            switch (item.estado) {
+                case 'Ingresada':
+                    groupedByDate[date].ingresados++;
+                    break;
+                case 'Salida':
+                    groupedByDate[date].salidos++;
+                    break;
+                case 'Extraviada':
+                    groupedByDate[date].extraviados++;
+                    break;
+            }
+        });
+
+        // Ordenar fechas de más reciente a más antigua
+        const sortedDates = Object.keys(groupedByDate).sort((a, b) =>
+            new Date(b) - new Date(a)
+        );
+
+        // Crear filas de la tabla
+        sortedDates.forEach(date => {
             const row = document.createElement('tr');
+            const data = groupedByDate[date];
+            const total = data.ingresados + data.salidos + data.extraviados;
+
             row.innerHTML = `
                 <td>${date}</td>
-                <td>${record.entradas}</td>
-                <td>${record.salidas}</td>
-                <td>${record.extraviada}</td>
-                <td>${record.total}</td>
+                <td>${data.ingresados}</td>
+                <td>${data.salidos}</td>
+                <td>${data.extraviados}</td>
+                <td>${total}</td>
             `;
             tbody.appendChild(row);
         });
     }
 
-    document.getElementById('consultarButton').addEventListener('click', async () => {
-        const datosEstudiante = document.getElementById('datosEstudianteInput').value;
-        const codigoPertenencia = document.getElementById('codigoPertenenciaInput').value;
-        const estadoRegistros = document.getElementById('estadoRegistrosSelect').value;
+    // Actualizar datos inicialmente
+    updateCharts();
 
-        const filters = {
-            datosEstudiante,
-            estadoRegistros,
-            codigoPertenencia
-        };
+    // Actualizar cada 5 minutos
+    setInterval(updateCharts, 300000);
 
-        await loadChartsAndTables(filters, false); // Solo carga la última tabla
-    });
-
-    function loadAllRecordsTable(registros) {
-        const tbody = document.querySelector('#allRecordsTable tbody');
-        tbody.innerHTML = '';  // Clear existing rows
-        registros.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.id_registro}</td>
-                <td>${item.estado}</td>
-                <td>${formatDate(item.hora_entrada)}</td>
-                <td>${formatTime(item.hora_entrada)}</td>
-                <td>${formatTime(item.hora_salida)}</td>
-                <td>${item.id_estudiante}</td>
-                <td>${item.nombres_estudiante}</td>
-                <td>${item.codigo_pertenencia}</td>
-                <td>${item.nombre_objeto}</td>
-                <td><img src="${item.imagen_pertenencia}" alt="Imagen Pertenencia" width="50" loading="lazy"></td>
-            `;
-            tbody.appendChild(row);
-        });
-        function formatDate(dateTimeString) {
-            var dateTimeParts = dateTimeString.split('_');
-            var datePart = dateTimeParts[0].replace(/-/g, '/');
-            return new Date(datePart).toLocaleDateString('es-ES');
-        }
-
-        function formatTime(dateTimeString) {
-            if (!dateTimeString || dateTimeString.trim() === '') {
-                return 'SIN REGISTRO'; // Devuelve una cadena vacía si dateTimeString es nulo, indefinido o vacío
-            }
-            var dateTimeParts = dateTimeString.split('_');
-            var timePart = dateTimeParts[1].replace(/-/g, ':');
-            return timePart;
-        }
-    }
-
-    async function downloadPagePdf() {
+    // Configurar botones de descarga
+    document.getElementById('downloadPagePdf').addEventListener('click', async () => {
         const element = document.getElementById('main');
         const opt = {
-            margin: 0.5,
-            filename: 'reporte_pertenencias.pdf',
+            margin: 1,
+            filename: 'reporte.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(element).save();
-    }
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (error) {
+            console.error('Error al generar PDF:', error);
+            alert('Error al generar el PDF. Por favor, intente nuevamente.');
+        }
+    });
 
-    document.getElementById('downloadPagePdf').addEventListener('click', downloadPagePdf);
+    window.fetchExcelFile = async function () {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${config.API_URL}/api/pertenencia/descargar-excel`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'X-User-Role': 'personal'
+                }
+            });
 
-    loadChartsAndTables(); // Carga todo inicialmente
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '../../login_personal/pages/index.html';
+                    return;
+                }
+                throw new Error('Error al descargar el archivo Excel');
+            }
+
+            // Obtener el nombre del archivo del header Content-Disposition si existe
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = 'reporte.csv';
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                if (filenameMatch && filenameMatch[1]) {
+                    filename = filenameMatch[1].replace(/['"]/g, '');
+                }
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+
+            // Limpiar
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al descargar el archivo. Por favor, intente nuevamente.');
+        }
+    };
+
+    // Función para regresar a la página anterior
+    window.goBack = function () {
+        window.history.back();
+    };
+
+    // Función para cerrar sesión
+    window.logout = function () {
+        localStorage.removeItem('token');
+        window.location.href = '../../login_personal/pages/index.html';
+    };
 });
-
-async function fetchExcelFile() {
-    const href = `${API_URL}/pertenencia/generar-excel`;
-    window.open(href, "_blank");
-}
 

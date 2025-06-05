@@ -16,7 +16,12 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     
     # Configuración de CORS
-    CORS_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
+    CORS_ORIGINS = [
+        "http://localhost:5000",
+        "http://127.0.0.1:5000",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
+    ]
     
     # Configuración de rutas
     UPLOAD_FOLDER = BASE_DIR / 'data' / 'uploads'

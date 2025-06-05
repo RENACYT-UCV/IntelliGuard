@@ -2,6 +2,9 @@ from typing import Dict, List, Optional
 from datetime import datetime
 from ..models.reporte import Reporte, ReporteDetallado, ReporteModel
 from ..models.pertenencia import PertenenciaModel
+import pandas as pd
+import io
+import csv
 
 class ReporteService:
     @staticmethod
@@ -143,3 +146,37 @@ class ReporteService:
             }
         except Exception as e:
             return {'exito': False, 'errores': [str(e)]} 
+
+    @staticmethod
+    def generar_excel_reporte() -> Optional[io.BytesIO]:
+        """Genera un reporte CSV simple con los datos de los reportes"""
+        try:
+            # Obtener reportes
+            reportes = ReporteModel.buscar()
+            
+            if not reportes:
+                return None
+                
+            # Crear buffer para el CSV
+            output = io.StringIO()
+            writer = csv.writer(output)
+            
+            # Escribir encabezados
+            writer.writerow(['Fecha', 'Tipo', 'Detalles', 'Pertenencia', 'Estado', 'Estudiante'])
+            
+            # Escribir datos
+            for reporte in reportes:
+                writer.writerow([
+                    reporte.fecha.strftime('%Y-%m-%d %H:%M:%S'),
+                    reporte.tipo,
+                    reporte.detalles,
+                    reporte.pertenencia.descripcion if reporte.pertenencia else '',
+                    reporte.pertenencia.estado if reporte.pertenencia else '',
+                    reporte.pertenencia.estudiante.nombres if reporte.pertenencia and reporte.pertenencia.estudiante else ''
+                ])
+            
+            # Convertir a bytes
+            return io.BytesIO(output.getvalue().encode('utf-8'))
+        except Exception as e:
+            print(f"Error generando reporte: {str(e)}")
+            return None

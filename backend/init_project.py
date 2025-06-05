@@ -1,7 +1,7 @@
 import os
 import sys
 from app.utils.logger import logger
-from app.database.db_init import init_db
+from app.database.init_db import init_database
 from app.utils.download_models import download_models
 from app.config.config import config
 
@@ -16,6 +16,7 @@ def init_project():
             os.path.join(config.BASE_DIR, 'data', 'uploads'),
             os.path.join(config.BASE_DIR, 'data', 'models', 'facial'),
             os.path.join(config.BASE_DIR, 'data', 'models', 'objects'),
+            os.path.dirname(config.DATABASE_PATH)  # Asegurar que el directorio de la base de datos existe
         ]
         
         for directory in directories:
@@ -24,7 +25,7 @@ def init_project():
         
         # Inicializar base de datos
         logger.info("Inicializando base de datos...")
-        init_db()
+        init_database()
         logger.info("Base de datos inicializada correctamente")
         
         # Descargar modelos

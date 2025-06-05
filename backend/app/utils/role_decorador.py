@@ -35,9 +35,14 @@ def role_required(required_roles: Union[str, List[str]]):
                 
                 # Convertir required_roles a lista si es string
                 roles_list = [required_roles] if isinstance(required_roles, str) else required_roles
+                # Convertir a minúsculas para comparación
+                roles_list = [r.lower() for r in roles_list]
+                
+                # Obtener el rol del usuario y convertir a minúsculas
+                user_role = claims.get('rol', '').lower()
                 
                 # Verificar rol
-                if claims.get('rol') not in roles_list:
+                if user_role not in roles_list:
                     logger.warning(f"Intento de acceso no autorizado: Usuario con rol {claims.get('rol')} intentó acceder a ruta que requiere {roles_list}")
                     return jsonify({
                         'error': 'No tienes permisos para realizar esta acción',

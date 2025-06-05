@@ -2,22 +2,15 @@ from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from ..models.usuario import BaseDatosUsuarios
 from ..utils.role_decorador import role_required
-from ..models import Session
+from ..models import get_db_session
 import bcrypt
 import re
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 def get_db():
     """Obtiene una nueva sesión de la base de datos"""
-    session = Session()
-    try:
-        return session
-    except:
-        session.rollback()
-        raise
-    finally:
-        session.close()
+    return get_db_session()
 
 def validar_credenciales_numericas(usuario: str, contraseña: str) -> bool:
     """Valida que las credenciales sean solo números y tengan 6 dígitos"""
@@ -41,7 +34,12 @@ def login():
     user = base_datos_usuarios.obtener_por_usuario(usuario)
     
     if user and bcrypt.checkpw(contraseña.encode('utf-8'), user.hash_contraseña.encode('utf-8')):
-        access_token = create_access_token(identity=user.id_usuario)
+        access_token = create_access_token(
+            identity=user.usuario,
+            additional_claims={
+                "rol": user.rol.rol if user.rol else None
+            }
+        )
         return jsonify({
             'access_token': access_token,
             'user': {
@@ -53,9 +51,13 @@ def login():
     
     return jsonify({'error': 'Credenciales inválidas'}), 401
 
-@auth_bp.route('/login/personal', methods=['POST'])
+@auth_bp.route('/login/personal', methods=['POST', 'OPTIONS'])
 def login_personal():
+    """Login para personal"""
     try:
+        if request.method == 'OPTIONS':
+            return '', 200
+            
         data = request.get_json()
         usuario = data.get('usuario')
         contraseña = data.get('contraseña')
@@ -67,7 +69,7 @@ def login_personal():
             }), 400
             
         # Validar que la contraseña sea numérica y tenga 6 dígitos
-        if not validar_contraseña_numerica(contraseña):
+        if not re.match(r'^\d{6}$', contraseña):
             return jsonify({
                 'error': 'La contraseña debe ser un número de 6 dígitos',
                 'status': 'error'

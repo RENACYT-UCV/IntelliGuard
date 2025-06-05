@@ -1,6 +1,6 @@
 const config = {
     // URL base de la API
-    API_URL: 'http://localhost:5000',
+    API_URL: 'http://127.0.0.1:5000',
 
     // Rutas de la API
     API_ROUTES: {
@@ -49,9 +49,9 @@ const config = {
 
     // Configuración de almacenamiento local
     STORAGE: {
-        TOKEN_KEY: 'intelliguard_token',
-        USER_KEY: 'intelliguard_user',
-        PREFERENCES_KEY: 'intelliguard_preferences',
+        TOKEN_KEY: 'token',
+        USER_KEY: 'user',
+        PREFERENCES_KEY: 'preferences',
     },
 
     // Timeouts y reintentos

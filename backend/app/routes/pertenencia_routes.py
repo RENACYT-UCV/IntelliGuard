@@ -1,28 +1,32 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file
 from ..services.pertenencia_service import PertenenciaService
 from ..utils.role_decorador import role_required
+from flask_jwt_extended import jwt_required
+from datetime import datetime
 import logging
+import csv
+import io
+import pandas as pd
+import os
 
 logger = logging.getLogger(__name__)
 
 pertenencia_bp = Blueprint('pertenencia', __name__, url_prefix='/api/pertenencia')
+pertenencia_service = PertenenciaService()
 
-@pertenencia_bp.route('/buscar', methods=['POST'])
+@pertenencia_bp.route('/buscar', methods=['GET'])
 @role_required(['admin', 'personal'])
 def buscar_pertenencias():
     """Busca pertenencias por diferentes criterios"""
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({
-                'error': 'Se requieren criterios de búsqueda',
-                'status': 'error'
-            }), 400
-
+        datos_estudiante = request.args.get('datos_estudiante', '')
+        estado = request.args.get('estado', '')
+        codigo = request.args.get('codigo', '')
+        
         pertenencias = PertenenciaService.buscar_pertenencias(
-            datos_estudiante=data.get('datos_estudiante', ''),
-            estado=data.get('estado', ''),
-            codigo=data.get('codigo', '')
+            datos_estudiante=datos_estudiante,
+            estado=estado,
+            codigo=codigo
         )
         
         return jsonify({
@@ -130,3 +134,81 @@ def listar_por_estudiante(id_estudiante):
             'error': 'Error al listar pertenencias',
             'status': 'error'
         }), 500 
+
+@pertenencia_bp.route('/consulta-reporte', methods=['OPTIONS'])
+def consulta_reporte_options():
+    return '', 200
+
+@pertenencia_bp.route('/consulta-reporte', methods=['GET', 'POST'])
+@jwt_required()
+@role_required(['admin', 'personal'])
+def consulta_reporte():
+    """Obtiene los datos para el reporte"""
+    try:
+        pertenencias = PertenenciaService.buscar_pertenencias()
+        return jsonify({
+            'pertenencias': pertenencias,
+            'status': 'success'
+        })
+    except Exception as e:
+        logger.error(f"Error consultando reporte: {str(e)}")
+        return jsonify({
+            'error': 'Error al consultar reporte',
+            'status': 'error'
+        }), 500
+
+@pertenencia_bp.route('/descargar-excel', methods=['OPTIONS'])
+def descargar_excel_options():
+    return '', 200
+
+@pertenencia_bp.route('/descargar-excel', methods=['GET'])
+@jwt_required()
+@role_required(['admin', 'personal'])
+def descargar_excel():
+    try:
+        # Obtener datos de pertenencias
+        pertenencias = pertenencia_service.get_all_pertenencias()
+        
+        # Crear DataFrame
+        df = pd.DataFrame(pertenencias)
+        df = df.rename(columns={
+            'id': 'ID',
+            'estudiante_id': 'ID Estudiante',
+            'tipo': 'Tipo',
+            'descripcion': 'Descripción',
+            'fecha_registro': 'Fecha de Registro',
+            'estado': 'Estado'
+        })
+        
+        # Crear buffer en memoria para el archivo Excel
+        output = io.BytesIO()
+        
+        # Escribir DataFrame a Excel
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Pertenencias', index=False)
+            
+            # Ajustar ancho de columnas
+            worksheet = writer.sheets['Pertenencias']
+            for i, col in enumerate(df.columns):
+                column_len = max(df[col].astype(str).str.len().max(), len(col)) + 2
+                worksheet.set_column(i, i, column_len)
+        
+        output.seek(0)
+        
+        # Generar nombre de archivo con fecha
+        fecha_actual = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'reporte_pertenencias_{fecha_actual}.xlsx'
+        
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=filename
+        )
+        
+    except Exception as e:
+        logger.error(f"Error generando reporte: {str(e)}")
+        return jsonify({
+            'error': 'Error al generar reporte',
+            'status': 'error'
+        }), 500
