@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+html, body {
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", sans-serif;
+  color: #d5d7da;
+  background-color: #21334d;
+  position: relative;
+  z-index: 0;
+}
+
+/* Fondo con gradientes + imagen difuminada */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5)),
+    url('../../../assets/Reportes/fondo.png') no-repeat center center fixed;
+  background-size: cover;
+  filter: blur(3px);
+  z-index: -1;
+}
+
+.header {
+    background-color: rgba(0, 123, 255, 0.8);
+    color: white;
+    padding: 12px 24px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.header .titulo {
+  font-weight: bold;
+}
+
+.search-box {
+  background-color: rgba(19, 88, 116, 0.8);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+#searchInput {
+  padding: 10px;
+  width: 80%;
+  max-width: 400px;
+  border: none;
+  border-radius: 4px;
+}
+
+main {
+  padding: 20px;
+}
+
+.registro-item {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.registro-header {
+  margin-bottom: 10px;
+}
+
+.registro-body {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.registro-body img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.estado {
+  font-weight: bold;
+  color: green;
+}
+
+@media (max-width: 600px) {
+  .registro-body {
+    flex-direction: column;
+  }
+}
+
+/* Estilo del spinner-box */
+.spinner-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+/* Estilo del texto del spinner */
+.spinner-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Estilo del spinner */
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.estado-salida {
+  color: green;
+}
+
+.estado-extraviada {
+  color: red;
+}
+
+.estado-ingresada {
+  color: rgb(103, 138, 255);
+}
