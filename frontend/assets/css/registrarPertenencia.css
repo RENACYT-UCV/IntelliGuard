@@ -33,7 +33,7 @@ body::before {
   background:
     linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
     linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5)),
-    url('../../../public/reportes/fondo.png') no-repeat center center fixed;
+    url('../images/fondo.png') no-repeat center center fixed;
   background-size: cover;
   filter: blur(3px);
   z-index: -1;
