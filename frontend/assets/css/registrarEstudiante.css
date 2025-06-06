@@ -17,7 +17,7 @@ body::before {
     background:
         linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
         linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5)),
-        url('../../../public/reportes/fondo.png') no-repeat center center fixed;
+        url('../images/fondo.png') no-repeat center center fixed;
     background-size: cover;
     filter: blur(3px);
     z-index: -1;
@@ -89,4 +89,71 @@ body::before {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Estilos migrados desde el HTML */
+.camera-container {
+    position: relative;
+    width: 640px;
+    margin: 0 auto;
+}
+#videoElement {
+    width: 100%;
+    border-radius: 8px;
+}
+.capture-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.capture-btn:hover {
+    background: #0056b3;
+}
+.photo-preview {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.photo-preview img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+}
+.photo-count {
+    text-align: center;
+    margin: 10px 0;
+    color: #666;
+}
+.form-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }

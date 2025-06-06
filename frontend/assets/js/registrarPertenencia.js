@@ -155,4 +155,79 @@ function validarDatos() {
         }
         registroInfo.innerHTML = content;
     }
+
+    // Elementos esenciales
+    let stream = null;
+    const video = document.getElementById('video');
+    const captureBtn = document.getElementById('captureBtn');
+    const preview = document.getElementById('preview');
+    const form = document.getElementById('registroForm');
+    const codigoInput = document.getElementById('codigoEstudiante');
+    const tipoInput = document.getElementById('tipoObjeto');
+    const descInput = document.getElementById('descripcion');
+    let capturedImage = null;
+
+    // Autollenar código de estudiante
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.codigo) {
+        codigoInput.value = user.codigo;
+        codigoInput.readOnly = true;
+    }
+
+    // Iniciar cámara
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        } catch (err) {
+            alert('Error al acceder a la cámara: ' + err.message);
+        }
+    }
+    startCamera();
+
+    // Capturar imagen
+    captureBtn.addEventListener('click', function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        capturedImage = canvas.toDataURL('image/jpeg').split(',')[1];
+        preview.src = 'data:image/jpeg;base64,' + capturedImage;
+        preview.style.display = 'block';
+    });
+
+    // Enviar formulario
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!capturedImage) {
+            alert('Primero capture una imagen del objeto.');
+            return;
+        }
+        const codigoEstudiante = codigoInput.value;
+        const tipoObjeto = tipoInput.value;
+        const descripcion = descInput.value;
+        try {
+            const response = await fetch('http://localhost:5000/ia/pertenencias/registrar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    codigo_estudiante: codigoEstudiante,
+                    tipo_objeto: tipoObjeto,
+                    descripcion: descripcion,
+                    imagen: capturedImage
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Pertenencia registrada exitosamente');
+                form.reset();
+                preview.style.display = 'none';
+                capturedImage = null;
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo registrar la pertenencia.'));
+            }
+        } catch (err) {
+            alert('Error al registrar pertenencia: ' + err.message);
+        }
+    });
 });

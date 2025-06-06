@@ -1,9 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>IntelliGuard - Sistema de Seguridad</title>
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .welcome-container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .welcome-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .option-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .option-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #007bff;
+        }
+
+        .option-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .option-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-option {
+            background: #007bff;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+            margin: 0.5rem;
+        }
+
+        .btn-option:hover {
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+    </style>
   </head>
-  <body></body>
+  <body>
+    <div class="welcome-container">
+        <h1 class="welcome-title">Bienvenido a IntelliGuard</h1>
+        <p>Sistema Inteligente de Seguridad y Control de Acceso</p>
+        
+        <div class="options-container">
+            <div class="option-card">
+                <i class="fas fa-user-graduate option-icon"></i>
+                <h2 class="option-title">Estudiante</h2>
+                <p class="option-description">Accede al sistema como estudiante usando reconocimiento facial</p>
+                <a href="./pages/loginEstudiante.html" class="btn-option">Ingresar</a>
+                <a href="./pages/registroEstudiante.html" class="btn-option btn-secondary">Registrarse</a>
+            </div>
+
+            <div class="option-card">
+                <i class="fas fa-user-shield option-icon"></i>
+                <h2 class="option-title">Administrador</h2>
+                <p class="option-description">Accede al panel de administración para gestionar el sistema</p>
+                <a href="./pages/index_admin.html" class="btn-option">Ingresar</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de utilidades -->
+    <script src="./utils/config.js"></script>
+    <script src="./utils/sessionManager.js"></script>
+    <script src="./utils/iaService.js"></script>
+  </body>
 </html>

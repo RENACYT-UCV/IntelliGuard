@@ -1,4 +1,21 @@
 import os
+from pathlib import Path
+
+# Directorio raíz del proyecto
+ROOT_DIR = Path(__file__).parent.parent
+
+# Configuración de la base de datos
+DB_PATH = os.path.join(ROOT_DIR, 'data', 'database.db')
+
+# Directorio para almacenar imágenes de pertenencias
+PERTENENCIAS_DIR = os.path.join(ROOT_DIR, 'data', 'pertenencias')
+
+# Crear directorios si no existen
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+os.makedirs(PERTENENCIAS_DIR, exist_ok=True)
+
+# Configuración de la API
+API_URL = 'http://localhost:5000'
 
 # Rutas base
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -10,7 +27,6 @@ MODELO_OBJETOS = os.path.join(BASE_DIR, 'data', 'models', 'objetos', 'ModelObjet
 # Rutas de datos
 DATASET_FACIAL = os.path.join(BASE_DIR, 'data', 'datasets', 'facial')
 DATASET_OBJETOS = os.path.join(BASE_DIR, 'data', 'datasets', 'objetos')
-PERTENENCIAS_DIR = os.path.join(BASE_DIR, 'data', 'pertenencias')
 
 # Configuraciones de reconocimiento facial
 CONFIANZA_MINIMA = 0.5
@@ -18,9 +34,6 @@ MAX_FOTOS = 10
 
 # Configuraciones de detección de objetos
 CONFIANZA_OBJETO = 0.5
-
-# Configuraciones de base de datos
-DB_PATH = os.path.join(BASE_DIR, 'data', 'pertenencias', 'basededatos.db')
 
 # Asegurar que las carpetas existan
 def crear_directorios():
