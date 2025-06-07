@@ -12,7 +12,7 @@ class Database:
     def conectar(self):
         """Establece conexión con la base de datos"""
         try:
-            self.conn = sqlite3.connect(DB_PATH)
+            self.conn = sqlite3.connect(DB_PATH, check_same_thread=False)
             self.cursor = self.conn.cursor()
             print("Conexión a base de datos establecida")
         except Exception as e:
@@ -21,6 +21,18 @@ class Database:
     def crear_tablas(self):
         """Crea las tablas necesarias si no existen"""
         try:
+            # Tabla de administradores
+            self.cursor.execute('''
+                CREATE TABLE IF NOT EXISTS administradores (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    usuario TEXT UNIQUE NOT NULL,
+                    contraseña TEXT NOT NULL,
+                    nombre TEXT NOT NULL,
+                    rol TEXT NOT NULL DEFAULT 'admin',
+                    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            
             # Tabla de estudiantes
             self.cursor.execute('''
                 CREATE TABLE IF NOT EXISTS estudiantes (

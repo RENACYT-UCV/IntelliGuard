@@ -25,7 +25,22 @@
       <form id="registroForm">
         <div class="form-group">
           <label for="codigoEstudiante">Código del Estudiante:</label>
-          <input type="text" id="codigoEstudiante" required>
+          <input type="text" id="codigoEstudiante" name="codigoEstudiante" required>
+        </div>
+
+        <div class="form-group">
+          <label for="nombreEstudiante">Nombre:</label>
+          <input type="text" id="nombreEstudiante" name="nombreEstudiante" required>
+        </div>
+
+        <div class="form-group">
+          <label for="carreraEstudiante">Carrera:</label>
+          <input type="text" id="carreraEstudiante" name="carreraEstudiante" required>
+        </div>
+
+        <div class="form-group">
+          <label for="planEstudiante">Plan:</label>
+          <input type="text" id="planEstudiante" name="planEstudiante" required>
         </div>
 
         <div class="form-group">
@@ -43,6 +58,14 @@
         <div class="form-group">
           <label for="descripcion">Descripción:</label>
           <textarea id="descripcion" required></textarea>
+        </div>
+
+        <div class="registro-info"></div>
+
+        <div class="registro-result" style="display: none;">
+          <div class="response-message"></div>
+          <i class="fas fa-check-circle success-icon" style="display: none;"></i>
+          <i class="fas fa-times-circle error-icon" style="display: none;"></i>
         </div>
 
         <div class="message" id="message"></div>

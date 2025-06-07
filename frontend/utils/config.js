@@ -1,5 +1,5 @@
 // Configuración de URLs
-const API_URL = 'http://localhost:3000/api';  // URL del backend principal
+const API_URL = 'http://localhost:5000';  // URL del backend principal
 const IA_URL = 'http://localhost:5000';       // URL del servicio de IA
 
 // Configuración de endpoints

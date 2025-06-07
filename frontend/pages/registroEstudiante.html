@@ -3,83 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Estudiante - IntelliGuard</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <title>Listado de Estudiantes Registrados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/menu.css">
     <link rel="stylesheet" href="../assets/css/registroEstudiante.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../utils/sessionManager.js" defer></script>
+    <script src="../utils/config.js" defer></script>
+    <script src="../assets/js/estudiantesListar.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <div class="registro-container">
-            <h2>Registro de Estudiante</h2>
-            <form id="registroForm">
-                <!-- Paso 1: Ingreso de código -->
-                <div id="step1">
-                    <div class="form-group mb-4">
-                        <label for="codigoEstudiante">Código del Estudiante:</label>
-                        <input type="text" id="codigoEstudiante" class="form-control" required>
-                    </div>
-
-                    <!-- Contenedor de la cámara -->
-                    <div class="camera-container mb-4">
-                        <video id="videoElement" autoplay playsinline></video>
-                        <canvas id="canvas" style="display: none;"></canvas>
-                        
-                        <!-- Controles de la cámara -->
-                        <div class="camera-controls mt-2">
-                            <button type="button" id="startCaptureBtn" class="btn btn-primary">
-                                Iniciar Captura
-                            </button>
-                            <button type="button" id="toggleCameraBtn" class="btn btn-secondary">
-                                Cambiar Cámara
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Barra de progreso -->
-                    <div class="progress-container mb-4">
-                        <div class="progress" style="height: 20px;">
-                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%">
-                                <span id="progressText">0/5</span>
-                            </div>
-                        </div>
-                        <div class="text-center mt-2">
-                            <span id="statusText">Esperando inicio de captura...</span>
-                        </div>
-                    </div>
-
-                    <!-- Vista previa de fotos -->
-                    <div id="photoPreview" class="photo-preview mb-4">
-                        <!-- Las miniaturas se agregarán aquí -->
-                    </div>
-
-                    <!-- Botones de acción -->
-                    <div class="button-group">
-                        <button type="button" id="registrarBtn" class="btn btn-success" disabled>
-                            Registrar Estudiante
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='../index.html'">
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Paso 2: Confirmación -->
-                <div id="step2" style="display: none;">
-                    <div class="text-center">
-                        <h3 class="mb-4">¡Registro Completado!</h3>
-                        <p>El estudiante ha sido registrado exitosamente.</p>
-                        <button type="button" class="btn btn-primary" onclick="window.location.href='../index.html'">
-                            Volver al Inicio
-                        </button>
-                    </div>
-                </div>
-            </form>
+    <div class="header">
+        <div class="header-username">
+            <span class="username">Administrador: <span id="admin-username"></span></span>
+            <button class="logout-btn" onclick="logout()">Salir</button>
         </div>
+        <br>
+        <span class="rol">Rol: Administrador</span>
     </div>
-
-    <script src="../utils/config.js"></script>
-    <script src="../utils/iaService.js"></script>
-    <script src="../assets/js/registrarEstudiante.js"></script>
+    <div class="registro-container">
+        <h1>Listado de Estudiantes Registrados</h1>
+        <button class="btn btn-primary mb-3" onclick="window.location.href='menu_admin.html'">Volver al Menú</button>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Fotos</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-estudiantes">
+                <!-- Aquí se cargarán los datos con JavaScript -->
+            </tbody>
+        </table>
+    </div>
 </body>
 </html> 

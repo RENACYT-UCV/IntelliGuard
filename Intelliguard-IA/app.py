@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import cv2
 import numpy as np
@@ -6,6 +6,7 @@ import base64
 from core.reconocimiento.facial import ReconocimientoFacial
 from core.pertenencias.gestion import GestionPertenencias
 from core.objetos.deteccion import DeteccionObjetos
+from utils.auth import login_required, autenticar_admin, crear_admin_inicial
 import os
 from datetime import datetime
 from utils.config import ROOT_DIR, DATASET_FACIAL
@@ -53,6 +54,7 @@ def verificar_rostro():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/ia/pertenencias/registrar', methods=['POST'])
+@login_required
 def registrar_pertenencia():
     try:
         data = request.json
@@ -86,15 +88,18 @@ def registrar_pertenencia():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/ia/pertenencias/consultar', methods=['GET'])
+@login_required
 def consultar_pertenencias():
     try:
         codigo_estudiante = request.args.get('codigo_estudiante')
-        resultado = gestionador.consultar_pertenencias(codigo_estudiante)
+        # Usar la función obtener_pertenencias, que permite filtrar o traer todo
+        resultado = gestionador.obtener_pertenencias(codigo_estudiante)
         return jsonify(resultado)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/ia/objetos/detectar', methods=['POST'])
+@login_required
 def detectar_objetos():
     try:
         # Obtener imagen en base64
@@ -171,6 +176,76 @@ def registrar_estudiante():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/ia/login/administrador', methods=['POST'])
+def login_administrador():
+    try:
+        data = request.json
+        usuario = data.get('usuario')
+        contraseña = data.get('contraseña')
+        
+        if not usuario or not contraseña:
+            return jsonify({'error': 'Usuario y contraseña requeridos'}), 400
+            
+        token, error = autenticar_admin(usuario, contraseña)
+        if error:
+            return jsonify({'error': error}), 401
+            
+        return jsonify({
+            'access_token': token,
+            'mensaje': 'Login exitoso'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/ia/admin/inicial', methods=['POST'])
+def crear_admin():
+    try:
+        data = request.json
+        usuario = data.get('usuario')
+        contraseña = data.get('contraseña')
+        nombre = data.get('nombre')
+        
+        if not all([usuario, contraseña, nombre]):
+            return jsonify({'error': 'Todos los campos son requeridos'}), 400
+            
+        exito, mensaje = crear_admin_inicial(usuario, contraseña, nombre)
+        if not exito:
+            return jsonify({'error': mensaje}), 400
+            
+        return jsonify({'mensaje': mensaje})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/ia/estudiantes/listar', methods=['GET'])
+def listar_estudiantes():
+    try:
+        estudiantes = {}
+        for archivo in os.listdir(DATASET_FACIAL):
+            if archivo.endswith('.jpg'):
+                codigo = archivo.split('_')[0]
+                if codigo not in estudiantes:
+                    estudiantes[codigo] = []
+                estudiantes[codigo].append(f"/ia/estudiantes/foto/{archivo}")
+        resultado = []
+        for codigo, fotos in estudiantes.items():
+            resultado.append({
+                "codigo": codigo,
+                "fotos": fotos
+            })
+        return jsonify(resultado)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/ia/estudiantes/foto/<nombre_foto>', methods=['GET'])
+def servir_foto_estudiante(nombre_foto):
+    try:
+        ruta = os.path.join(DATASET_FACIAL, nombre_foto)
+        if not os.path.exists(ruta):
+            return "No encontrada", 404
+        return send_file(ruta, mimetype='image/jpeg')
+    except Exception as e:
+        return str(e), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True) 

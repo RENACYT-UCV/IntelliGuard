@@ -35,6 +35,9 @@ MAX_FOTOS = 10
 # Configuraciones de detección de objetos
 CONFIANZA_OBJETO = 0.5
 
+# Configuración de JWT
+JWT_SECRET_KEY = 'tu_clave_secreta_muy_segura'  # En producción, usar una clave segura y almacenarla en variables de entorno
+
 # Asegurar que las carpetas existan
 def crear_directorios():
     directorios = [

@@ -99,7 +99,7 @@
                 <h2 class="option-title">Estudiante</h2>
                 <p class="option-description">Accede al sistema como estudiante usando reconocimiento facial</p>
                 <a href="./pages/loginEstudiante.html" class="btn-option">Ingresar</a>
-                <a href="./pages/registroEstudiante.html" class="btn-option btn-secondary">Registrarse</a>
+                <a href="./pages/registrarEstudiante.html" class="btn-option btn-secondary">Registrarse</a>
             </div>
 
             <div class="option-card">
@@ -115,5 +115,21 @@
     <script src="./utils/config.js"></script>
     <script src="./utils/sessionManager.js"></script>
     <script src="./utils/iaService.js"></script>
+    <script>
+        // Validar que no haya sesión activa en la página principal
+        document.addEventListener('DOMContentLoaded', function() {
+            const jwtCookie = getCookie('jwt');
+            const usernameCookie = getCookie('username');
+            if (jwtCookie && usernameCookie) {
+                // Si hay sesión activa, redirigir según el tipo de usuario
+                const userType = getCookie('userType');
+                if (userType === 'admin') {
+                    window.location.href = './pages/index_admin.html';
+                } else if (userType === 'personal') {
+                    window.location.href = './pages/index_personal.html';
+                }
+            }
+        });
+    </script>
   </body>
 </html>
