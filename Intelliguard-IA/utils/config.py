@@ -4,14 +4,10 @@ from pathlib import Path
 # Directorio raíz del proyecto
 ROOT_DIR = Path(__file__).parent.parent
 
-# Configuración de la base de datos
-DB_PATH = os.path.join(ROOT_DIR, 'data', 'database.db')
-
 # Directorio para almacenar imágenes de pertenencias
 PERTENENCIAS_DIR = os.path.join(ROOT_DIR, 'data', 'pertenencias')
 
 # Crear directorios si no existen
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 os.makedirs(PERTENENCIAS_DIR, exist_ok=True)
 
 # Configuración de la API
@@ -45,8 +41,7 @@ def crear_directorios():
         os.path.dirname(MODELO_OBJETOS),
         DATASET_FACIAL,
         DATASET_OBJETOS,
-        PERTENENCIAS_DIR,
-        os.path.dirname(DB_PATH)
+        PERTENENCIAS_DIR
     ]
     
     for directorio in directorios:

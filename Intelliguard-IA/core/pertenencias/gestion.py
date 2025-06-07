@@ -1,5 +1,5 @@
 import os
-import sqlite3
+from utils.database import Database
 from datetime import datetime
 from pathlib import Path
 import sys
@@ -9,35 +9,27 @@ import cv2
 ROOT_DIR = Path(__file__).parent.parent.parent
 sys.path.append(str(ROOT_DIR))
 
-from utils.config import DB_PATH
-
 class GestionPertenencias:
     def __init__(self):
         """Inicializa el gestor de pertenencias"""
+        self.db = Database()
         self.crear_tablas()
         
     def crear_tablas(self):
         """Crea las tablas necesarias si no existen"""
         try:
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            
-            # Tabla de pertenencias
-            cursor.execute('''
+            cursor = self.db.ejecutar('''
                 CREATE TABLE IF NOT EXISTS pertenencias (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     codigo_estudiante TEXT NOT NULL,
                     tipo_objeto TEXT NOT NULL,
                     descripcion TEXT,
                     ruta_imagen TEXT NOT NULL,
-                    fecha_entrada DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    fecha_salida DATETIME,
+                    fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    fecha_salida TIMESTAMP,
                     estado TEXT DEFAULT 'entrada'
                 )
             ''')
-            
-            conn.commit()
-            conn.close()
             print("Tablas creadas exitosamente")
         except Exception as e:
             print(f"Error al crear tablas: {str(e)}")
@@ -56,17 +48,10 @@ class GestionPertenencias:
             dict: Resultado de la operación
         """
         try:
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                INSERT INTO pertenencias (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, estado)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, 'ENTREGADO'))
-            
-            conn.commit()
-            conn.close()
-            
+            cursor = self.db.ejecutar(
+                'INSERT INTO pertenencias (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, estado) VALUES (%s, %s, %s, %s, %s)',
+                (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, 'ENTREGADO')
+            )
             return {
                 'mensaje': 'Pertenencia registrada exitosamente',
                 'codigo_estudiante': codigo_estudiante,
@@ -87,32 +72,17 @@ class GestionPertenencias:
             dict: Resultado de la operación
         """
         try:
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            
-            # Verificar si existe una entrada sin salida
-            cursor.execute('''
-                SELECT id FROM pertenencias 
-                WHERE codigo_estudiante = ? 
-                AND tipo_objeto = ? 
-                AND estado = 'ENTREGADO'
-            ''', (codigo_estudiante, tipo_objeto))
-            
-            resultado = cursor.fetchone()
+            cursor = self.db.ejecutar(
+                'SELECT id FROM pertenencias WHERE codigo_estudiante = %s AND tipo_objeto = %s AND estado = %s',
+                (codigo_estudiante, tipo_objeto, 'ENTREGADO')
+            )
+            resultado = cursor.fetchone() if cursor else None
             if not resultado:
                 return {'error': 'No se encontró una entrada registrada para este objeto'}
-                
-            # Registrar salida
-            cursor.execute('''
-                UPDATE pertenencias 
-                SET fecha_salida = CURRENT_TIMESTAMP,
-                    estado = 'RETIRADO'
-                WHERE id = ?
-            ''', (resultado[0],))
-            
-            conn.commit()
-            conn.close()
-            
+            self.db.ejecutar(
+                'UPDATE pertenencias SET fecha_salida = CURRENT_TIMESTAMP, estado = %s WHERE id = %s',
+                ('RETIRADO', resultado[0])
+            )
             return {
                 'mensaje': 'Salida registrada exitosamente',
                 'codigo_estudiante': codigo_estudiante,
@@ -132,18 +102,12 @@ class GestionPertenencias:
             list: Lista de pertenencias
         """
         try:
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                SELECT tipo_objeto, descripcion, fecha_entrada, fecha_salida, estado, ruta_imagen
-                FROM pertenencias 
-                WHERE codigo_estudiante = ?
-                ORDER BY fecha_entrada DESC
-            ''', (codigo_estudiante,))
-            
+            cursor = self.db.ejecutar(
+                'SELECT tipo_objeto, descripcion, fecha_entrada, fecha_salida, estado, ruta_imagen FROM pertenencias WHERE codigo_estudiante = %s ORDER BY fecha_entrada DESC',
+                (codigo_estudiante,)
+            )
             pertenencias = []
-            for row in cursor.fetchall():
+            for row in cursor.fetchall() if cursor else []:
                 pertenencias.append({
                     'tipo_objeto': row[0],
                     'descripcion': row[1],
@@ -152,8 +116,6 @@ class GestionPertenencias:
                     'estado': row[4],
                     'ruta_imagen': row[5]
                 })
-                
-            conn.close()
             return pertenencias
         except Exception as e:
             return {'error': str(e)}
@@ -170,29 +132,22 @@ class GestionPertenencias:
         """
         try:
             # Verificar si el estudiante ya existe
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            cursor.execute('''
+            cursor = self.db.ejecutar('''
                 SELECT * FROM pertenencias 
-                WHERE codigo_estudiante = ?
+                WHERE codigo_estudiante = %s
             ''', (codigo_estudiante,))
             
             estudiante = cursor.fetchone()
-            conn.close()
             
             if estudiante:
                 return True
                 
             # Si no existe, registrarlo
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            cursor.execute('''
+            cursor = self.db.ejecutar('''
                 INSERT INTO pertenencias (codigo_estudiante, nombre, apellido)
-                VALUES (?, ?, ?)
+                VALUES (%s, %s, %s)
             ''', (codigo_estudiante, f"Estudiante {codigo_estudiante}", "No especificado"))
             
-            conn.commit()
-            conn.close()
             print(f"Estudiante {codigo_estudiante} registrado automáticamente")
             return True
             
@@ -227,15 +182,10 @@ class GestionPertenencias:
                 cv2.imwrite(ruta_imagen, imagen)
                 
             # Registrar en base de datos
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            cursor.execute('''
+            cursor = self.db.ejecutar('''
                 INSERT INTO pertenencias (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, estado)
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s)
             ''', (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, 'ENTREGADO'))
-            
-            conn.commit()
-            conn.close()
             
             print(f"Pertinencia registrada exitosamente para estudiante {codigo_estudiante}")
             return True
@@ -256,42 +206,36 @@ class GestionPertenencias:
             list: Lista de pertenencias (como diccionarios)
         """
         try:
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            
-            query = "SELECT id, codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, fecha_entrada, fecha_salida, estado FROM pertenencias"
+            query = 'SELECT id, codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, fecha_entrada, fecha_salida, estado FROM pertenencias'
             params = []
             if codigo_estudiante or estado:
-                query += " WHERE"
+                query += ' WHERE'
                 if codigo_estudiante:
-                    query += " codigo_estudiante = ?"
+                    query += ' codigo_estudiante = %s'
                     params.append(codigo_estudiante)
                 if estado:
                     if codigo_estudiante:
-                        query += " AND"
-                    query += " UPPER(estado) = ?"
+                        query += ' AND'
+                    query += ' UPPER(estado) = %s'
                     params.append(estado.upper())
-            query += " ORDER BY fecha_entrada DESC"
-            
-            cursor.execute(query, tuple(params))
-            rows = cursor.fetchall()
-            conn.close()
-            # Devuelve una lista de diccionarios
+            query += ' ORDER BY fecha_entrada DESC'
+            cursor = self.db.ejecutar(query, tuple(params))
+            rows = cursor.fetchall() if cursor else []
             return [
                 {
-                    "id": row[0],
-                    "codigo_estudiante": row[1],
-                    "tipo_objeto": row[2],
-                    "descripcion": row[3],
-                    "ruta_imagen": row[4],
-                    "fecha_entrada": row[5],
-                    "fecha_salida": row[6],
-                    "estado": row[7]
+                    'id': row[0],
+                    'codigo_estudiante': row[1],
+                    'tipo_objeto': row[2],
+                    'descripcion': row[3],
+                    'ruta_imagen': row[4],
+                    'fecha_entrada': row[5],
+                    'fecha_salida': row[6],
+                    'estado': row[7]
                 }
                 for row in rows
             ]
         except Exception as e:
-            print(f"Error al obtener pertenencias: {str(e)}")
+            print(f'Error al obtener pertenencias: {str(e)}')
             return []
             
     def __del__(self):

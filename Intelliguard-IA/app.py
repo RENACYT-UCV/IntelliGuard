@@ -13,7 +13,8 @@ from utils.config import ROOT_DIR, DATASET_FACIAL
 import io
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-
+from dotenv import load_dotenv
+load_dotenv()
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type", "Authorization"])
 
@@ -21,6 +22,7 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}}, method
 reconocedor = ReconocimientoFacial()
 gestionador = GestionPertenencias()
 detector = DeteccionObjetos()
+
 
 @app.route('/ia/reconocimiento/capturar', methods=['POST'])
 def capturar_rostro():
@@ -171,6 +173,15 @@ def registrar_estudiante():
 
         # Entrenar el modelo con las nuevas imágenes
         reconocedor.entrenar_modelo()
+
+        # Registrar estudiante en la base de datos si no existe
+        db = gestionador.db
+        cursor = db.ejecutar('SELECT codigo_estudiante FROM estudiantes WHERE codigo_estudiante = %s', (codigo_estudiante,))
+        if not cursor or not cursor.fetchone():
+            db.ejecutar(
+                'INSERT INTO estudiantes (codigo_estudiante) VALUES (%s)',
+                (codigo_estudiante,)
+            )
 
         return jsonify({
             'mensaje': 'Estudiante registrado exitosamente',

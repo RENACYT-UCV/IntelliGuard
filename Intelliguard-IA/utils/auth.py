@@ -61,7 +61,7 @@ def crear_admin_inicial(usuario, contraseña, nombre):
         
         # Insertar admin
         db.ejecutar(
-            "INSERT INTO administradores (usuario, contraseña, nombre) VALUES (?, ?, ?)",
+            "INSERT INTO administradores (usuario, contraseña, nombre) VALUES (%s, %s, %s)",
             (usuario, contraseña_hash, nombre)
         )
         return True, "Administrador creado exitosamente"
@@ -73,7 +73,7 @@ def autenticar_admin(usuario, contraseña):
     try:
         # Buscar admin
         admin = db.obtener_uno(
-            "SELECT id, contraseña FROM administradores WHERE usuario = ?",
+            "SELECT id, contraseña FROM administradores WHERE usuario = %s",
             (usuario,)
         )
         

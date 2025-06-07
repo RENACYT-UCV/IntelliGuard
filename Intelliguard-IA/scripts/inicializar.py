@@ -27,12 +27,6 @@ def copiar_archivos_origen():
                     shutil.copy2(archivo, DATASET_OBJETOS)
             print("Dataset de objetos copiado exitosamente")
             
-        # Copiar base de datos
-        origen_db = ROOT_DIR.parent / 'basededatos.db'
-        if origen_db.exists():
-            shutil.copy2(origen_db, PERTENENCIAS_DIR)
-            print("Base de datos copiada exitosamente")
-            
     except Exception as e:
         print(f"Error al copiar archivos: {str(e)}")
 

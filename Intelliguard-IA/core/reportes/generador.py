@@ -40,10 +40,10 @@ class GeneradorReportes:
             params = []
             if filtros:
                 if filtros.get('estudiante'):
-                    query += " AND (e.Nombres LIKE ? OR e.codigoEstudiante LIKE ?)"
+                    query += " AND (e.Nombres LIKE %s OR e.codigoEstudiante LIKE %s)"
                     params.extend([f"%{filtros['estudiante']}%", f"%{filtros['estudiante']}%"])
                 if filtros.get('estado'):
-                    query += " AND ep.estado LIKE ?"
+                    query += " AND ep.estado LIKE %s"
                     params.append(f"%{filtros['estado']}%")
                     
             # Ejecutar consulta
