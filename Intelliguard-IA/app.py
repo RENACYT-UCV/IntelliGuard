@@ -6,13 +6,13 @@ import base64
 from core.reconocimiento.facial import ReconocimientoFacial
 from core.pertenencias.gestion import GestionPertenencias
 from core.objetos.deteccion import DeteccionObjetos
-from utils.auth import login_required, autenticar_admin, crear_admin_inicial
+from utils.auth import login_required, autenticar_admin, crear_admin_inicial, generar_token
 import os
 from datetime import datetime
 from utils.config import ROOT_DIR, DATASET_FACIAL
 
 app = Flask(__name__)
-CORS(app)  # Habilitar CORS para todas las rutas
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type", "Authorization"])
 
 # Inicializar servicios
 reconocedor = ReconocimientoFacial()
@@ -246,6 +246,37 @@ def servir_foto_estudiante(nombre_foto):
         return send_file(ruta, mimetype='image/jpeg')
     except Exception as e:
         return str(e), 500
+
+@app.route('/ia/login/estudiante', methods=['POST', 'OPTIONS'])
+def login_estudiante():
+    if request.method == 'OPTIONS':
+        return '', 200
+    try:
+        data = request.json
+        codigo_estudiante = data.get('codigo_estudiante')
+        
+        if not codigo_estudiante:
+            return jsonify({'error': 'Código de estudiante requerido'}), 400
+            
+        # Verificar que el estudiante existe en el dataset facial
+        estudiante_existe = False
+        for archivo in os.listdir(DATASET_FACIAL):
+            if archivo.startswith(f"{codigo_estudiante}_"):
+                estudiante_existe = True
+                break
+                
+        if not estudiante_existe:
+            return jsonify({'error': 'Estudiante no encontrado'}), 404
+            
+        # Generar token JWT
+        token = generar_token(codigo_estudiante)
+        
+        return jsonify({
+            'access_token': token,
+            'mensaje': 'Login exitoso'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True) 

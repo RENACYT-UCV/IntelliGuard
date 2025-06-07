@@ -142,14 +142,35 @@ function mostrarEstudianteReconocido(codigo, confianza) {
     actualizarEstado(`¡Estudiante reconocido! Código: ${codigo}`, 'success');
     progressContainer.style.display = 'none';
     loginBtn.style.display = 'block';
-    // Redirigir automáticamente al menú después de 1 segundo
-    setTimeout(() => {
-        localStorage.setItem('user', JSON.stringify({
-            codigo: codigo,
-            tipo: 'estudiante'
-        }));
-        window.location.href = 'menu.html';
-    }, 1000);
+
+    // Obtener el token del backend
+    fetch('http://localhost:5000/ia/login/estudiante', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ codigo_estudiante: codigo })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.access_token) {
+            // Guardar el token y el código en la cookie usando saveAuth
+            saveAuth(data.access_token, codigo);
+            // Guardar información del usuario
+            localStorage.setItem('user', JSON.stringify({
+                codigo: codigo,
+                tipo: 'estudiante'
+            }));
+            // Redirigir al menú
+            window.location.href = 'menu.html';
+        } else {
+            throw new Error('No se recibió el token de acceso');
+        }
+    })
+    .catch(error => {
+        mostrarError('Error al obtener el token: ' + error.message);
+        loginBtn.disabled = false;
+    });
 }
 
 // Iniciar sesión
