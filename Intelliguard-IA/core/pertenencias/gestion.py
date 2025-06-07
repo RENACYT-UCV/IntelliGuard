@@ -253,13 +253,13 @@ class GestionPertenencias:
             estado: Filtrar por estado (opcional)
             
         Returns:
-            list: Lista de pertenencias
+            list: Lista de pertenencias (como diccionarios)
         """
         try:
             conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
             
-            query = "SELECT * FROM pertenencias"
+            query = "SELECT id, codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, fecha_entrada, fecha_salida, estado FROM pertenencias"
             params = []
             if codigo_estudiante or estado:
                 query += " WHERE"
@@ -274,9 +274,22 @@ class GestionPertenencias:
             query += " ORDER BY fecha_entrada DESC"
             
             cursor.execute(query, tuple(params))
-            pertenencias = cursor.fetchall()
+            rows = cursor.fetchall()
             conn.close()
-            return pertenencias
+            # Devuelve una lista de diccionarios
+            return [
+                {
+                    "id": row[0],
+                    "codigo_estudiante": row[1],
+                    "tipo_objeto": row[2],
+                    "descripcion": row[3],
+                    "ruta_imagen": row[4],
+                    "fecha_entrada": row[5],
+                    "fecha_salida": row[6],
+                    "estado": row[7]
+                }
+                for row in rows
+            ]
         except Exception as e:
             print(f"Error al obtener pertenencias: {str(e)}")
             return []
