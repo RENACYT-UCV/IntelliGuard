@@ -39,5 +39,31 @@ document.addEventListener('DOMContentLoaded', function() {
             tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">Error al cargar historial</td></tr>';
         });
     };
+
+    document.getElementById('btnDescargarPDF').onclick = function() {
+        fetch(API_URL + '/ia/pertenencias/reporte/pdf', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + getCookie('jwt')
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('No se pudo generar el PDF');
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'reporte_pertenencias.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(() => {
+            alert('Error al descargar el PDF');
+        });
+    };
 });
 

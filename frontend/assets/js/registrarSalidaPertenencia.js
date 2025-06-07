@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const containerResult = document.getElementById('container-result');
     const spinnerObjeto = document.querySelector('.spinner-box');
     let dataPertenencia = { estudiante: null, objetos: [] };
+    const user = JSON.parse(localStorage.getItem('user'));
+    const codigoEstudiante = user ? user.codigo : null;
+    const container = document.getElementById('pertenencias-container');
+    const codigoEstudianteDiv = document.getElementById('codigo-estudiante');
 
     init();
 
@@ -16,6 +20,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         registrarSalidaBtn.addEventListener('click', registrarSalida);
         window.addEventListener('message', handleMessage);
+
+        if (!codigoEstudiante) {
+            container.innerHTML = '<p>No se encontró el código del estudiante.</p>';
+            registrarSalidaBtn.disabled = true;
+            return;
+        }
+
+        if (codigoEstudianteDiv) {
+            codigoEstudianteDiv.textContent = codigoEstudiante || 'No disponible';
+        }
+
+        // 1. Consultar pertenencias activas
+        fetch(API_URL + '/ia/pertenencias/consultar?codigo_estudiante=' + codigoEstudiante, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + getCookie('jwt')
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            dataPertenencia.objetos = (Array.isArray(data) ? data : []).filter(p =>
+                p.estado && (p.estado.toUpperCase() === 'ENTREGADO' || p.estado.toLowerCase() === 'entrada')
+            );
+            if (dataPertenencia.objetos.length === 0) {
+                container.innerHTML = '<p>No tienes pertenencias activas.</p>';
+                registrarSalidaBtn.disabled = true;
+                return;
+            }
+            container.innerHTML = dataPertenencia.objetos.map((p, i) => `
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pertenencia" id="pertenencia${i}" value="${p.id}">
+                    <label class="form-check-label" for="pertenencia${i}">
+                        ${p.tipo_objeto} - ${p.descripcion} (${p.fecha_entrada})
+                    </label>
+                </div>
+            `).join('');
+            registrarSalidaBtn.disabled = false;
+        });
     }
 
     function handleMessage(event) {
@@ -59,30 +101,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function registrarSalida() {
         containerResult.style.display = 'none';
-        const idRegistros = [];
-        const checkboxes = document.querySelectorAll('.select-pertenencia');
-        checkboxes.forEach((checkbox, index) => {
-            const estado = checkbox.checked ? 2 : 3;
-            idRegistros.push({
-                codPertenecia: dataPertenencia.objetos[index].codigo_pertenencia,
-                estado: estado
-            });
-        });
-        console.log(idRegistros);
+        const seleccionada = document.querySelector('input[name="pertenencia"]:checked');
+        if (!seleccionada) {
+            alert('Selecciona una pertenencia para registrar la salida.');
+            return;
+        }
+        const idSeleccionada = seleccionada.value;
+        const pertenencia = dataPertenencia.objetos.find(p => p.id == idSeleccionada);
 
-        const requestData = { codPertenciaIdEstado: idRegistros };
-
-        fetch(API_URL + '/pertenencia/registrar-salida-pertenencia', {
+        fetch(API_URL + '/ia/pertenencias/registrar-salida', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + getCookie('jwt'),
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getCookie('jwt')
             },
-            body: JSON.stringify(requestData)
+            body: JSON.stringify({
+                codigo_estudiante: codigoEstudiante,
+                tipo_objeto: pertenencia.tipo_objeto
+            })
         })
-        .then(handleResponse)
-        .then(() => mostrarIconoResultado(true, 'Registrado correctamente, salida de pertenencias'))
-        .catch(error => mostrarIconoResultado(false, 'Error al registrar la salida de pertenencias'));
+        .then(res => res.json())
+        .then(data => {
+            if (data.mensaje) {
+                alert('Salida registrada exitosamente');
+                window.location.reload();
+            } else {
+                alert(data.error || 'Error al registrar salida');
+            }
+        });
     }
 
     function handleResponse(response) {

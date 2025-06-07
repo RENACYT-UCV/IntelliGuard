@@ -10,6 +10,9 @@ from utils.auth import login_required, autenticar_admin, crear_admin_inicial, ge
 import os
 from datetime import datetime
 from utils.config import ROOT_DIR, DATASET_FACIAL
+import io
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"], allow_headers=["Content-Type", "Authorization"])
@@ -275,6 +278,46 @@ def login_estudiante():
             'access_token': token,
             'mensaje': 'Login exitoso'
         })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/ia/pertenencias/reporte/pdf', methods=['GET'])
+@login_required
+def reporte_pertenencias_pdf():
+    try:
+        registros = gestionador.obtener_pertenencias()
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+        y = height - 40
+        p.setFont("Helvetica-Bold", 14)
+        p.drawString(40, y, "Reporte de Pertenencias")
+        y -= 30
+        p.setFont("Helvetica", 10)
+        for reg in registros:
+            texto = f"{reg['codigo_estudiante']} | {reg['tipo_objeto']} | {reg['descripcion']} | {reg['fecha_entrada']} | {reg['estado']}"
+            p.drawString(40, y, texto)
+            y -= 15
+            if y < 40:
+                p.showPage()
+                y = height - 40
+        p.save()
+        buffer.seek(0)
+        return send_file(buffer, as_attachment=True, download_name="reporte_pertenencias.pdf", mimetype='application/pdf')
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/ia/pertenencias/registrar-salida', methods=['POST'])
+@login_required
+def registrar_salida_pertenencia():
+    try:
+        data = request.json
+        codigo_estudiante = data.get('codigo_estudiante')
+        tipo_objeto = data.get('tipo_objeto')
+        if not codigo_estudiante or not tipo_objeto:
+            return jsonify({'error': 'Faltan datos requeridos'}), 400
+        resultado = gestionador.registrar_salida(codigo_estudiante, tipo_objeto)
+        return jsonify(resultado)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

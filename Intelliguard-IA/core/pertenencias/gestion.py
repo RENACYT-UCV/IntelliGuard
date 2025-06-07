@@ -60,9 +60,9 @@ class GestionPertenencias:
             cursor = conn.cursor()
             
             cursor.execute('''
-                INSERT INTO pertenencias (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen)
-                VALUES (?, ?, ?, ?)
-            ''', (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen))
+                INSERT INTO pertenencias (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, estado)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (codigo_estudiante, tipo_objeto, descripcion, ruta_imagen, 'ENTREGADO'))
             
             conn.commit()
             conn.close()
@@ -95,7 +95,7 @@ class GestionPertenencias:
                 SELECT id FROM pertenencias 
                 WHERE codigo_estudiante = ? 
                 AND tipo_objeto = ? 
-                AND estado = 'entrada'
+                AND estado = 'ENTREGADO'
             ''', (codigo_estudiante, tipo_objeto))
             
             resultado = cursor.fetchone()
@@ -106,7 +106,7 @@ class GestionPertenencias:
             cursor.execute('''
                 UPDATE pertenencias 
                 SET fecha_salida = CURRENT_TIMESTAMP,
-                    estado = 'salida'
+                    estado = 'RETIRADO'
                 WHERE id = ?
             ''', (resultado[0],))
             
