@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (username) {
         document.getElementById("admin-username").textContent = username;
     }
-    fetch(IA_URL + "/ia/estudiantes/listar", { headers: { "Authorization": "Bearer " + getCookie("jwt") } })
+    fetch(API_URL + "/ia/estudiantes/listar", { headers: { "Authorization": "Bearer " + getCookie("jwt") } })
         .then(response => response.json())
         .then(data => {
             var tbody = document.getElementById("tbody-estudiantes");

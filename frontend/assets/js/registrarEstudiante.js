@@ -170,7 +170,7 @@ async function registrarEstudiante() {
             imagenes: capturedPhotos.map(photo => photo.split(',')[1])
         };
 
-        const response = await fetch('http://localhost:5000/ia/estudiantes/registrar', {
+        const response = await fetch(API_URL + '/ia/estudiantes/registrar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

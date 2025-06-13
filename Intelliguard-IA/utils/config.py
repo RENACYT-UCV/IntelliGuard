@@ -11,7 +11,7 @@ PERTENENCIAS_DIR = os.path.join(ROOT_DIR, 'data', 'pertenencias')
 os.makedirs(PERTENENCIAS_DIR, exist_ok=True)
 
 # Configuración de la API
-API_URL = 'http://localhost:5000'
+API_URL = os.environ.get('API_URL', 'https://intelliguard-ia-o65o.onrender.com')
 
 # Rutas base
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -99,7 +99,7 @@ async function realizarReconocimiento() {
         }
         
         // Enviar al backend
-        const response = await fetch('http://localhost:5000/ia/reconocimiento/verificar', {
+        const response = await fetch(API_URL + '/ia/reconocimiento/verificar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -144,7 +144,7 @@ function mostrarEstudianteReconocido(codigo, confianza) {
     loginBtn.style.display = 'block';
 
     // Obtener el token del backend
-    fetch('http://localhost:5000/ia/login/estudiante', {
+    fetch(API_URL + '/ia/login/estudiante', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -5,7 +5,7 @@ function getCookie(name) {
     return '';
 }
 
-const API_URL = "http://localhost:5000"; // Cambia esta URL si tu backend está en otra dirección
+const API_URL = "https://intelliguard-ia-o65o.onrender.com"; // URL del backend desplegado
 
 // Variables globales
 let stream = null;

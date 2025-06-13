@@ -1,7 +1,7 @@
 function login() {
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
-    fetch(IA_URL + '/ia/login/administrador', {
+    fetch(API_URL + '/ia/login/administrador', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -12,7 +12,7 @@ function login() {
     .then(data => {
         if (data.access_token) {
             saveAuth(data.access_token, username);
-            window.location.href = 'menu_admin.html';
+            window.location.href = 'dashboardadmin.html';
         } else {
             document.getElementById('error-message').style.display = 'block';
         }
