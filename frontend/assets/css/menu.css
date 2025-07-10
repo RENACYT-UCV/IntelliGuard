@@ -24,8 +24,7 @@ body::before {
   inset: 0;
   background:
     linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5)),
-    url('../images/fondo.png') no-repeat center center fixed;
+    linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5));
   background-size: cover;
   filter: blur(3px);
   z-index: -1;

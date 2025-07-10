@@ -23,8 +23,8 @@ body::before {
   inset: 0;
   background: 
   linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), /* capa oscura aumentada */
-  linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5)),
-  url('https://cosasbucket.s3.amazonaws.com/wp-content/uploads/2022/09/04122124/lossy-page1-1200px-Frontis_LosOlivos.tif.jpg') no-repeat center center fixed;
+  linear-gradient(rgba(2, 35, 68, 0.5), rgba(22, 3, 6, 0.5));
+  
 background-size: cover;
 
   filter: blur(3px);
