@@ -1,6 +1,6 @@
 // Configuración de URLs
-const API_URL = 'https://intelliguard-ia-o65o.onrender.com';  // URL del backend principal
-const IA_URL = 'https://intelliguard-ia-o65o.onrender.com';       // URL del servicio de IA
+const API_URL = 'https://intelliguard-ia-yo9r.onrender.com';  // URL del backend principal
+const IA_URL = 'https://intelliguard-ia-yo9r.onrender.com';       // URL del servicio de IA
 
 // Configuración de endpoints
 const ENDPOINTS = {
